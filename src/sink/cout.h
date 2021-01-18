@@ -4,10 +4,8 @@
 
 namespace logging {
 
-class Formatter;
-
 /**
- * @brief Log handler that writes to std::cout.
+ * @brief Log sink that writes to std::cout.
  * 
  */
 class CoutSink : public BaseSink
