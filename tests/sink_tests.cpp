@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <iostream>
-#include <cout_handler.h>
+#include <sink/cout.h>
 #include <log_level.h>
 
 using namespace logging;
@@ -73,7 +73,7 @@ struct FakeFormatter : public IFormatter
 
 /*
  *
- *  CoutHandler tests
+ *  CoutSink tests
  * 
  */
 
@@ -99,7 +99,7 @@ protected:
         std::cout.rdbuf(external_buf);
     }
     
-    CoutHandler handler;
+    CoutSink handler;
     
     std::string fetch_output()
     {

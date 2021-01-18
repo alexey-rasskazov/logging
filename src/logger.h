@@ -27,9 +27,9 @@ public:
 
 	LogLevel get_log_level() const;
 
-	bool add_handler(ILogHandler* handler);
+	bool add_handler(ILogSink* handler);
 
-	void remove_handler(ILogHandler* handler);
+	void remove_handler(ILogSink* handler);
 
 private:
 
@@ -39,7 +39,7 @@ private:
 
 	LogLevel log_level;
 
-	std::vector<ILogHandler*> handlers;
+	std::vector<ILogSink*> handlers;
 };
 
 }

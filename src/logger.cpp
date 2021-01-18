@@ -35,7 +35,7 @@ LogLevel Logger::get_log_level() const
     return log_level;
 }
 
-bool Logger::add_handler(ILogHandler* handler)
+bool Logger::add_handler(ILogSink* handler)
 {
     if (std::find(handlers.begin(), handlers.end(), handler) == handlers.end()) {
         handlers.push_back(handler);
@@ -44,7 +44,7 @@ bool Logger::add_handler(ILogHandler* handler)
     return false;
 }
 
-void Logger::remove_handler(ILogHandler* handler)
+void Logger::remove_handler(ILogSink* handler)
 {
     handlers.erase(
         std::remove(handlers.begin(), handlers.end(), handler),

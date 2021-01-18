@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <logger.h>
-#include <cout_handler.h>
+#include <sink/cout.h>
 
 using namespace logging;
 
@@ -26,7 +26,7 @@ protected:
         std::cout.rdbuf(external_buf);
     }
     
-    CoutHandler handler;
+    CoutSink handler;
     
     std::string fetch_output()
     {

@@ -13,7 +13,8 @@ add_library(logger STATIC
   src/log_record_data.cpp src/log_record_data.h
   src/formatter.cpp src/formatter.h
   src/logger.cpp src/logger.h
-  src/cout_handler.cpp src/cout_handler.h
+  src/sink/base.cpp src/sink/base.h
+  src/sink/cout.cpp src/sink/cout.h
 )
 
 set_target_properties(
@@ -62,7 +63,7 @@ endif()
 add_executable(unit_tests
   tests/format_tests.cpp
   tests/log_record_tests.cpp
-  tests/handlers_tests.cpp
+  tests/sink_tests.cpp
 )
 
 add_executable(functional_tests

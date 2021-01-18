@@ -45,7 +45,7 @@ struct IFormatter
  * @brief Handler interface
  * 
  */
-struct ILogHandler
+struct ILogSink
 {
 	virtual void write(ILogRecordData *record, IFormatter *logger_formatter) = 0;
 };
