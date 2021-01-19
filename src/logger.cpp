@@ -16,6 +16,16 @@ Logger::~Logger()
 
 }
 
+std::string Logger::get_format() const
+{
+    return log_formatter ? log_formatter->get_format() : "";
+}
+
+void Logger::reseset_formatter()
+{
+    log_formatter.reset();
+}
+
 LogRecord Logger::write(LogLevel level)
 {
     if (level < log_level || level == LogLevel::DISABLED) {
@@ -55,7 +65,7 @@ void Logger::remove_handler(ILogSink* handler)
 void Logger::write_record(ILogRecordData* record)
 {
     for (auto handler : handlers) {
-        handler->write(record, nullptr);
+        handler->write(record, log_formatter.get());
     }
 }
 

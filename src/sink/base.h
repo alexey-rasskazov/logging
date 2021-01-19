@@ -36,7 +36,7 @@ public:
     template<class T>
     void set_formatter(T&& formatter);
     
-    void reseset_format();
+    void reseset_formatter();
 
 protected:
 

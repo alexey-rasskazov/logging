@@ -15,11 +15,33 @@ class  Logger
 {
 public:
 	
-	/** Constructor. */
+	/**
+	 * @brief Construct a new Logger object
+	 * 
+	 */
 	Logger();
 
-	/** Destructor. */
+	/**
+	 * @brief Construct a new Logger object
+	 * 
+	 * @tparam T The template parameter can be logging::Formatter, std::string, and char*
+	 * @param formatter 
+	 */
+	template<class T>
+    Logger(T&& formatter);
+
+	/**
+	 * @brief Destroy the Logger object
+	 * 
+	 */
 	~Logger();
+
+	std::string get_format() const;
+
+    template<class T>
+    void set_formatter(T&& formatter);
+
+	void reseset_formatter();
 
 	LogRecord write(LogLevel level);
 
@@ -39,7 +61,21 @@ private:
 
 	LogLevel log_level;
 
+	std::unique_ptr<Formatter> log_formatter;
+
 	std::vector<ILogSink*> handlers;
 };
+
+template<class T>
+Logger::Logger(T&& formatter)
+    : log_formatter(std::make_unique<Formatter>(std::forward<T>(formatter)))
+	, log_level(LogLevel::DEBUG)
+{ }
+
+template<class T>
+void Logger::set_formatter(T&& formatter)
+{
+    log_formatter = std::make_unique<Formatter>(std::forward<T>(formatter));
+}
 
 }
