@@ -24,7 +24,7 @@ public:
 	/**
 	 * @brief Construct a new Logger object
 	 * 
-	 * @tparam T The template parameter can be logging::Formatter, std::string, and char*
+	 * @tparam T	The template parameter can be logging::Formatter, std::string, and char*
 	 * @param formatter 
 	 */
 	template<class T>
@@ -44,6 +44,8 @@ public:
 	void reseset_formatter();
 
 	LogRecord write(LogLevel level);
+
+	LogRecord write(LogLevel level, const char* file_name, int line_number);
 
 	void set_log_level(LogLevel level);
 
@@ -79,3 +81,9 @@ void Logger::set_formatter(T&& formatter)
 }
 
 }
+
+#ifdef LOG_FILE_LINE
+#  define WRITE_LOG(log, level) (log).write(level, __FILE__, __LINE__)
+#else
+#  define WRITE_LOG(log, level) (log).write(level)
+#endif

@@ -4,8 +4,8 @@
 namespace logging {
 
 /** Constructor. */
-Logger::Logger() :
-    log_level(LogLevel::DEBUG)
+Logger::Logger() 
+    : log_level(LogLevel::DEBUG)
 {
 
 }
@@ -29,10 +29,19 @@ void Logger::reseset_formatter()
 LogRecord Logger::write(LogLevel level)
 {
     if (level < log_level || level == LogLevel::DISABLED) {
-		return LogRecord();
+        return LogRecord();
     }
 
     return LogRecord(this, level);
+}
+
+LogRecord Logger::write(LogLevel level, const char* file_name, int line_number)
+{
+    if (level < log_level || level == LogLevel::DISABLED) {
+        return LogRecord();
+    }
+
+    return LogRecord(this, level, file_name, line_number);
 }
 
 void Logger::set_log_level(LogLevel level) 

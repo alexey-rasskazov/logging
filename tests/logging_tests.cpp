@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#define LOG_FILE_LINE
 #include <logger.h>
 #include <sink/cout.h>
 
@@ -87,6 +88,25 @@ TEST_F(LoggingTest, multiple_formatted_messages)
         log.write(level) << "Test message " << i;
         expected_output += std::string(log_level_name(level)) 
             + " Test message " + std::to_string(i) + nl;
+    }
+
+    EXPECT_EQ(fetch_output(), expected_output);
+}
+
+TEST_F(LoggingTest, multiple_formatted_messages_filename_line)
+{
+    Logger log;
+    log.add_handler(&cout_sink);
+    cout_sink.set_formatter(Formatter("${level_name} [${file}:${line}] ${message}"));
+    std::string expected_output;
+
+    for (int i = 0; i < 10; ++i) {
+        LogLevel level = i < 5 ? LogLevel::INFO : LogLevel::WARNING;
+#line 100 "tests/logging.cpp"
+        WRITE_LOG(log, level) << "Test message " << i;
+        expected_output += std::string(log_level_name(level)) 
+            + " [tests/logging.cpp:100] "
+            + "Test message " + std::to_string(i) + nl;
     }
 
     EXPECT_EQ(fetch_output(), expected_output);
