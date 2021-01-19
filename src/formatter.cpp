@@ -6,7 +6,6 @@
 
 namespace logging {
 
-
 struct TextData : public ITextData
 {
     std::string data;
