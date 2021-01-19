@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <ctime>   // localtime
 #include <vector>
+#include <numeric>
 #include "log_level.h"
 
 namespace logging {
@@ -54,7 +55,7 @@ bool is_format_has_milliseconds(const std::string& format)
  * @return false 
  */
 bool prepare_time_format(std::string& format)
-{   
+{
     bool has_ms = is_format_has_milliseconds(format);
  
     if (has_ms) {
@@ -103,6 +104,13 @@ void format_date_and_time(ITextData *target, const std::string& format, int64_t 
     }
 }
 
+std::size_t calc_formatted_time_length(const std::string& format, bool is_millisecons)
+{
+    TextData data;
+    format_date_and_time(&data, format, 1610462801012, is_millisecons);
+    return data.data.length();
+}
+
 /**
  * @brief Type of format unit of formatter.
  * 
@@ -136,6 +144,19 @@ struct FormatUnit
         , text(text)
         , is_msec(is_msec)
     { }
+
+    std::size_t get_length() const
+    {
+        switch (type) {
+            case FormatUnitType::TIME:          return calc_formatted_time_length(text, is_msec);
+            case FormatUnitType::LEVEL:         return 3;
+            case FormatUnitType::LEVEL_NAME:    return 8;
+            case FormatUnitType::FILE:          return 0;
+            case FormatUnitType::LINE:          return 4;
+            case FormatUnitType::TEXT:          return text.length();
+        }
+        return 0;
+    }
 };
 
 /**
@@ -146,6 +167,8 @@ struct Formatter::Impl
 {
     std::string format_str;
     std::vector<FormatUnit> format_units;
+    std::size_t format_length;
+    bool has_file;
 
     void set_format(const std::string& format)
     {
@@ -185,6 +208,7 @@ struct Formatter::Impl
                         format_units.emplace_back(FormatUnitType::LEVEL);
                     } else if (element == "file") {
                         format_units.emplace_back(FormatUnitType::FILE);
+                        has_file = true;
                     } else if (element == "line") {
                         format_units.emplace_back(FormatUnitType::LINE);
                     } else if (element == "message") {
@@ -205,6 +229,16 @@ struct Formatter::Impl
         }
 
         format_str = format;
+
+        format_length = std::accumulate(
+            format_units.begin(), format_units.end(), 0,
+            [](size_t a, const FormatUnit& b) { return a + b.get_length(); }
+        );
+    }
+
+    std::size_t calc_record_size(ILogRecordData *record)
+    {
+        return format_length + record->get_data_length(has_file);
     }
 };
 
@@ -267,6 +301,8 @@ void Formatter::format_record(ITextData *result, ILogRecordData *record)
         result->append(record->get_data());
         return;
     }
+
+    result->reserve(pimpl->calc_record_size(record));
 
     for (const auto& unit : pimpl->format_units)
     {

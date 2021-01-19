@@ -29,11 +29,13 @@ public:
 
 	virtual unsigned long add_ref() override { return 1; }
 	virtual unsigned long release() override { return 0; }
-	virtual const char* get_data() override { return data.c_str(); }
-	virtual LogLevel get_level() override { return log_level; }
-	virtual int64_t get_time() override { return milliseconds; }
-	virtual const char* get_file_name() override { return file_name.c_str(); }
-	virtual int get_line_number() override { return line_number; }
+	virtual const char* get_data() const override { return data.c_str(); }
+    virtual int64_t get_data_length(bool add_filename) const override 
+    { return add_filename ? data.length() + file_name.length() : data.length(); }
+	virtual LogLevel get_level() const override { return log_level; }
+	virtual int64_t get_time() const override { return milliseconds; }
+	virtual const char* get_file_name() const override { return file_name.c_str(); }
+	virtual int get_line_number() const override { return line_number; }
 
 private:
     

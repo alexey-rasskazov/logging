@@ -15,11 +15,12 @@ struct ILogRecordData
 {
 	virtual unsigned long add_ref() = 0;
 	virtual unsigned long release() = 0;
-	virtual const char* get_data() = 0;
-	virtual LogLevel get_level() = 0;
-	virtual int64_t get_time() = 0;
-	virtual const char* get_file_name() = 0;
-	virtual int get_line_number() = 0;
+	virtual const char* get_data() const = 0;
+	virtual int64_t get_data_length(bool add_filename) const = 0;
+	virtual LogLevel get_level() const = 0;
+	virtual int64_t get_time() const = 0;
+	virtual const char* get_file_name() const = 0;
+	virtual int get_line_number() const = 0;
 };
 
 /**

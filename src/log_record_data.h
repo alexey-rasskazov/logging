@@ -28,11 +28,12 @@ public:
 
 	virtual unsigned long add_ref() override;
 	virtual unsigned long release() override;
-	virtual const char* get_data() override;
-	virtual LogLevel get_level() override;
-	virtual int64_t get_time() override;
-	virtual const char* get_file_name() override;
-	virtual int get_line_number() override;
+	virtual const char* get_data() const override;
+	virtual int64_t get_data_length(bool add_filename) const override;
+	virtual LogLevel get_level() const override;
+	virtual int64_t get_time() const override;
+	virtual const char* get_file_name() const override;
+	virtual int get_line_number() const override;
 
 private:
 

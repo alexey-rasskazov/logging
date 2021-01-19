@@ -37,27 +37,32 @@ unsigned long LogRecordData::release()
     return 0;
 }
 
-const char* LogRecordData::get_data()
+const char* LogRecordData::get_data() const
 {
     return data.c_str();
 }
 
-LogLevel LogRecordData::get_level()
+int64_t LogRecordData::get_data_length(bool add_filename) const 
+{
+    return add_filename ? data.length() + file_name.length() : data.length();
+}
+
+LogLevel LogRecordData::get_level() const
 {
     return log_level;
 }
 
-int64_t LogRecordData::get_time()
+int64_t LogRecordData::get_time() const
 {
     return milliseconds;
 }
 
-const char* LogRecordData::get_file_name()
+const char* LogRecordData::get_file_name() const
 {
     return file_name.c_str();
 }
 
-int LogRecordData::get_line_number()
+int LogRecordData::get_line_number() const
 {
     return line_number;
 }
