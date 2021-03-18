@@ -37,8 +37,8 @@ LogRecord::~LogRecord()
 {
     if (data)
 	{
-		if (data->counter == 1)
-		{
+        if (data->counter == 1)
+        {
             logger->write_record(data);
         }
         data->release();

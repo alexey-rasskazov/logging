@@ -64,6 +64,7 @@ add_executable(unit_tests
   tests/format_tests.cpp
   tests/log_record_tests.cpp
   tests/sink_tests.cpp
+  tests/fake_record_data.cpp
 )
 
 add_executable(functional_tests

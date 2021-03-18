@@ -23,15 +23,16 @@ public:
 	LogRecordData(LogRecordData&& rhs) = delete;
 	LogRecordData& operator = (LogRecordData&& src) = delete;
 
+	unsigned long add_ref();
+	unsigned long release();
 
     // ILogRecordData interface
 
-	virtual unsigned long add_ref() override;
-	virtual unsigned long release() override;
 	virtual const char* get_data() const override;
 	virtual int64_t get_data_length(bool add_filename) const override;
 	virtual LogLevel get_level() const override;
 	virtual int64_t get_time() const override;
+	virtual std::tm get_tm() const override;
 	virtual const char* get_file_name() const override;
 	virtual int get_line_number() const override;
 
@@ -47,7 +48,7 @@ private:
 	std::string file_name;
 	int line_number;
 	int64_t milliseconds;
-
+	mutable std::tm datetime;
 };
 
 }

@@ -1,6 +1,5 @@
 #include "formatter.h"
 #include <stdio.h>
-#include <ctime>   // localtime
 #include <vector>
 #include <numeric>
 #include "log_level.h"
@@ -85,17 +84,15 @@ bool prepare_time_format(std::string& format)
  * 
  * @param target 
  * @param format 
+ * @param datetime 
  * @param milliseconds 
- * @param is_show_milliseconds 
  */
-void format_date_and_time(ITextData *target, const std::string& format, int64_t milliseconds, bool is_show_milliseconds)
+void format_date_and_time(ITextData *target, const std::string& format, std::tm& datetime, int64_t milliseconds)
 {
-    time_t in_time_t = milliseconds / 1000;
-
     char time_str[40];
 
-    std::strftime(time_str, sizeof(time_str), format.c_str(), std::localtime(&in_time_t));
-    if (is_show_milliseconds) {
+    std::strftime(time_str, sizeof(time_str), format.c_str(), &datetime);
+    if (milliseconds) {
         char time_str_ms[40];
         snprintf(time_str_ms, sizeof(time_str_ms), time_str, milliseconds % 1000);
         target->append(time_str_ms);
@@ -107,7 +104,20 @@ void format_date_and_time(ITextData *target, const std::string& format, int64_t 
 std::size_t calc_formatted_time_length(const std::string& format, bool is_millisecons)
 {
     TextData data;
-    format_date_and_time(&data, format, 1610462801012, is_millisecons);
+    int64_t ms = 1610462801012;
+    std::tm datetime = {
+        .tm_sec = 41,
+        .tm_min = 46,
+        .tm_hour = 17,
+        .tm_mday = 12,
+        .tm_mon = 0,
+        .tm_year = 121,
+        .tm_wday = 2,
+        .tm_yday = 11,
+        .tm_isdst = 0,
+        .tm_gmtoff = 10800,
+    };
+    format_date_and_time(&data, format, datetime, is_millisecons ? ms : 0);
     return data.data.length();
 }
 
@@ -159,6 +169,18 @@ struct FormatUnit
     }
 };
 
+void format_record_date_and_time(ITextData* target, const FormatUnit& unit, ILogRecordData* record)
+{
+    std::tm datetime = record->get_tm();
+
+    format_date_and_time(
+        target,
+        unit.text,
+        datetime, 
+        unit.is_msec ? record->get_time() : 0
+    );
+}
+
 /**
  * @brief Formatter implementation
  * 
@@ -170,6 +192,11 @@ struct Formatter::Impl
     std::size_t format_length;
     bool has_file;
 
+    /**
+     * @brief Set the format string
+     * 
+     * @param format 
+     */
     void set_format(const std::string& format)
     {
         using std::string;
@@ -177,6 +204,7 @@ struct Formatter::Impl
         std::size_t i = 0, start = 0;
         std::size_t len = format.length();
         bool is_message = false;
+        has_file = false;
 
         format_units.clear();
 
@@ -190,31 +218,9 @@ struct Formatter::Impl
                 if (i == string::npos) {
                     i = start = len;
                 } else {
-                    string element = format.substr(start, i - start);
+                    is_message = add_format_unit(format.substr(start, i - start)) || is_message;
                     i++;
                     start = i;
-                    size_t fmt_pos = element.find_first_of(':');
-                    string element_fmt;
-                    if (fmt_pos != string::npos) {
-                        element_fmt = element.substr(fmt_pos + 1);
-                        element = element.substr(0, fmt_pos);
-                    }
-                    if (element == "time") {
-                        bool has_ms = prepare_time_format(element_fmt);
-                        format_units.emplace_back(FormatUnitType::TIME, element_fmt, has_ms);
-                    } else if (element == "level_name") {
-                        format_units.emplace_back(FormatUnitType::LEVEL_NAME);
-                    } else if (element == "level") {
-                        format_units.emplace_back(FormatUnitType::LEVEL);
-                    } else if (element == "file") {
-                        format_units.emplace_back(FormatUnitType::FILE);
-                        has_file = true;
-                    } else if (element == "line") {
-                        format_units.emplace_back(FormatUnitType::LINE);
-                    } else if (element == "message") {
-                        is_message = true;
-                        format_units.emplace_back(FormatUnitType::MESSAGE);
-                    }
                 }
             }
             i++;
@@ -236,6 +242,46 @@ struct Formatter::Impl
         );
     }
 
+    /**
+     * @brief Adds format element to format_units
+     * 
+     * @param element 
+     * @return true 
+     * @return false 
+     */
+    bool add_format_unit(std::string element)
+    {
+        size_t fmt_pos = element.find_first_of(':');
+        std::string element_fmt;
+        if (fmt_pos != std::string::npos) {
+            element_fmt = element.substr(fmt_pos + 1);
+            element = element.substr(0, fmt_pos);
+        }
+        if (element == "time") {
+            bool has_ms = prepare_time_format(element_fmt);
+            format_units.emplace_back(FormatUnitType::TIME, element_fmt, has_ms);
+        } else if (element == "level_name") {
+            format_units.emplace_back(FormatUnitType::LEVEL_NAME);
+        } else if (element == "level") {
+            format_units.emplace_back(FormatUnitType::LEVEL);
+        } else if (element == "file") {
+            format_units.emplace_back(FormatUnitType::FILE);
+            has_file = true;
+        } else if (element == "line") {
+            format_units.emplace_back(FormatUnitType::LINE);
+        } else if (element == "message") {
+            format_units.emplace_back(FormatUnitType::MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Calculates record size
+     * 
+     * @param record 
+     * @return std::size_t 
+     */
     std::size_t calc_record_size(ILogRecordData *record)
     {
         return format_length + record->get_data_length(has_file);
@@ -313,7 +359,7 @@ void Formatter::format_record(ITextData *result, ILogRecordData *record)
             break;
 
         case FormatUnitType::TIME:
-            format_date_and_time(result, unit.text, record->get_time(), unit.is_msec);
+            format_record_date_and_time(result, unit, record);
             break;
                 
         case FormatUnitType::LEVEL:

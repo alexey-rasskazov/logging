@@ -13,12 +13,13 @@ LogRecordData::LogRecordData(LogLevel log_level, const char* file_name, int line
     , log_level(log_level)
     , file_name(file_name)
     , line_number(line_number)
-{ 
+{
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     milliseconds = static_cast<int64_t>(
         std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
     );
+    datetime.tm_year = 0;
 }
 
 unsigned long LogRecordData::add_ref()
@@ -55,6 +56,16 @@ LogLevel LogRecordData::get_level() const
 int64_t LogRecordData::get_time() const
 {
     return milliseconds;
+}
+
+std::tm LogRecordData::get_tm() const
+{
+    if (datetime.tm_year == 0) {
+        time_t t = static_cast<time_t>(milliseconds/1000);
+        std::tm* tmp = localtime(&t);
+        datetime = *tmp;
+    }
+    return datetime;
 }
 
 const char* LogRecordData::get_file_name() const

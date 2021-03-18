@@ -2,46 +2,10 @@
 #include <iostream>
 #include <sink/cout.h>
 #include <log_level.h>
+#include "fake_record_data.h"
 
 using namespace logging;
 
-/*
- * Fake RecordData object.
- */
-struct FakeRecordData : public ILogRecordData
-{
-    std::string data;
-    LogLevel log_level;
-    std::string file_name;
-    int line_number;
-    int64_t milliseconds;
-
-    FakeRecordData(
-        LogLevel level = LogLevel::INFO,
-        const char* text = "",
-        const char* file = "",
-        int line = 0,
-        int64_t ms = 1610462801012
-    )
-        : log_level(level)
-        , data(text)
-        , file_name(file)
-        , line_number(line)
-        , milliseconds(ms)
-    {}
-
-    // ILogRecordData interface
-
-	virtual unsigned long add_ref() override { return 1; }
-	virtual unsigned long release() override { return 0; }
-	virtual const char* get_data() const override { return data.c_str(); }
-    virtual int64_t get_data_length(bool add_filename) const override 
-    { return add_filename ? data.length() + file_name.length() : data.length(); }
-	virtual LogLevel get_level() const override { return log_level; }
-	virtual int64_t get_time() const override { return milliseconds; }
-	virtual const char* get_file_name() const override { return file_name.c_str(); }
-	virtual int get_line_number() const override { return line_number; }
-};
 
 /* ITextData implementation */
 struct TextData : public ITextData
