@@ -15,6 +15,9 @@ add_library(logger STATIC
   src/logger.cpp src/logger.h
   src/sink/base.cpp src/sink/base.h
   src/sink/cout.cpp src/sink/cout.h
+  src/sink/file.cpp src/sink/file.h
+  src/sink/helpers/file_writer.cpp src/sink/helpers/file_writer.h
+  src/sink/helpers/filename_template.cpp src/sink/helpers/filename_template.h
 )
 
 set_target_properties(
