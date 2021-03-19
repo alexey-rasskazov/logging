@@ -15,7 +15,7 @@ struct TextData : public ITextData
         data.append(text);
     }
 
-	virtual void reserve(unsigned long size) override
+    virtual void reserve(unsigned long size) override
     {
         data.reserve(size);
     }

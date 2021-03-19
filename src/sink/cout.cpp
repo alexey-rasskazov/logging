@@ -17,7 +17,7 @@ struct CoutData : public ITextData
         std::cout << text;
     }
 
-	virtual void reserve(unsigned long size) override
+    virtual void reserve(unsigned long size) override
     { }
 };
 

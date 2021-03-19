@@ -11,7 +11,7 @@ struct FileRecordData : public ITextData
 {
     std::string data;
     virtual void append(const char* text) override;
-	virtual void reserve(unsigned long size) override;
+    virtual void reserve(unsigned long size) override;
 };
 
 class LogFile

@@ -6,49 +6,49 @@
 namespace logging {
 
 /**
- *	LogRecordData class.
+ *    LogRecordData class.
  */
 class LogRecordData final : public ILogRecordData
 {
 public:
 
-	LogRecordData(LogLevel log_level);
+    LogRecordData(LogLevel log_level);
 
-	LogRecordData(LogLevel log_level, const char* file_name, int line_number);
+    LogRecordData(LogLevel log_level, const char* file_name, int line_number);
 
-	// disable copy and move semantic
+    // disable copy and move semantic
 
-	LogRecordData(const LogRecordData& rhs) = delete;
-	LogRecordData& operator = (const LogRecordData& src) = delete;
-	LogRecordData(LogRecordData&& rhs) = delete;
-	LogRecordData& operator = (LogRecordData&& src) = delete;
+    LogRecordData(const LogRecordData& rhs) = delete;
+    LogRecordData& operator = (const LogRecordData& src) = delete;
+    LogRecordData(LogRecordData&& rhs) = delete;
+    LogRecordData& operator = (LogRecordData&& src) = delete;
 
-	unsigned long add_ref();
-	unsigned long release();
+    unsigned long add_ref();
+    unsigned long release();
 
     // ILogRecordData interface
 
-	virtual const char* get_data() const override;
-	virtual int64_t get_data_length(bool add_filename) const override;
-	virtual LogLevel get_level() const override;
-	virtual int64_t get_time() const override;
-	virtual std::tm get_tm() const override;
-	virtual const char* get_file_name() const override;
-	virtual int get_line_number() const override;
+    virtual const char* get_data() const override;
+    virtual int64_t get_data_length(bool add_filename) const override;
+    virtual LogLevel get_level() const override;
+    virtual int64_t get_time() const override;
+    virtual std::tm get_tm() const override;
+    virtual const char* get_file_name() const override;
+    virtual int get_line_number() const override;
 
 private:
 
-	~LogRecordData() = default;
+    ~LogRecordData() = default;
 
-	friend class LogRecord;
+    friend class LogRecord;
 
     unsigned long counter;
-	std::string data;
-	LogLevel log_level;
-	std::string file_name;
-	int line_number;
-	int64_t milliseconds;
-	mutable std::tm datetime;
+    std::string data;
+    LogLevel log_level;
+    std::string file_name;
+    int line_number;
+    int64_t milliseconds;
+    mutable std::tm datetime;
 };
 
 }

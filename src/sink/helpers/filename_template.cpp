@@ -49,11 +49,11 @@ bool is_equal_weeks(const std::tm& tm1, const std::tm& tm2)
 void FilenameTemplate::set_template(const std::string& file_template)
 {
     template_tokens.clear();
-	std::size_t p = 0, start = 0;
-	std::size_t len = file_template.length();
+    std::size_t p = 0, start = 0;
+    std::size_t len = file_template.length();
     is_rotate = false;
 
-	while ((p = file_template.find_first_of('%', start)) != std::string::npos && p + 1 < len) {
+    while ((p = file_template.find_first_of('%', start)) != std::string::npos && p + 1 < len) {
         if (p > start) {
             template_tokens.emplace_back(TemplateTokenType::TEXT, file_template.substr(start, p - start));
         }
@@ -65,12 +65,12 @@ void FilenameTemplate::set_template(const std::string& file_template)
         }
         template_tokens.emplace_back(type);
         is_rotate = true;
-		p++;
-		start = p;
-	}
+        p++;
+        start = p;
+    }
 
-	if (p > start) {
-		template_tokens.emplace_back(TemplateTokenType::TEXT, file_template.substr(start));
+    if (p > start) {
+        template_tokens.emplace_back(TemplateTokenType::TEXT, file_template.substr(start));
     }
 
     this->file_template = file_template;
@@ -80,7 +80,7 @@ bool FilenameTemplate::is_need_rotate(const std::tm& tm, const std::tm& current_
 {
     if (is_rotate) {
         for (auto& token : template_tokens) {
-			switch (token.type) {
+            switch (token.type) {
                 case TemplateTokenType::DAY:
                 case TemplateTokenType::YDAY:
                     if (current_tm.tm_yday != tm.tm_yday || 
@@ -106,8 +106,8 @@ bool FilenameTemplate::is_need_rotate(const std::tm& tm, const std::tm& current_
                     if (!is_equal_weeks(current_tm, tm))
                         return true;
                 break;
-			}
-		}
+            }
+        }
     }
 
     return false;

@@ -12,12 +12,12 @@ struct TextData : public ITextData
 {
     std::string data;
 
-	virtual void append(const char* text) override
+    virtual void append(const char* text) override
     {
         data.append(text);
     }
 
-	virtual void reserve(unsigned long size) override
+    virtual void reserve(unsigned long size) override
     {
         data.reserve(size);
     }

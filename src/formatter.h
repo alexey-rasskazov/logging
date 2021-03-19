@@ -37,7 +37,7 @@ public:
 
     Formatter& operator = (Formatter&& rhs) noexcept;
 
-	void set_format(const std::string& format);
+    void set_format(const std::string& format);
 
     std::string get_format() const;
 

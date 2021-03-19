@@ -36,7 +36,7 @@ LogRecord::LogRecord(const LogRecord &src)
 LogRecord::~LogRecord()
 {
     if (data)
-	{
+    {
         if (data->counter == 1)
         {
             logger->write_record(data);
@@ -72,9 +72,9 @@ bool LogRecord::is_enabled() const
 LogRecord& LogRecord::operator << (const std::string &val)
 {
     if (is_enabled()) {
-		data->data.append(val);
+        data->data.append(val);
     }
-	return *this;
+    return *this;
 }
 
 /**
@@ -83,9 +83,9 @@ LogRecord& LogRecord::operator << (const std::string &val)
 LogRecord& LogRecord::operator << (const char* val)
 {
     if (is_enabled()) {
-		data->data.append(val);
+        data->data.append(val);
     }
-	return *this;
+    return *this;
 }
 
 /**
@@ -94,9 +94,9 @@ LogRecord& LogRecord::operator << (const char* val)
 LogRecord& LogRecord::operator << (bool val)
 {
     if (is_enabled()) {
-		data->data.append(val ? "true" : "false");
+        data->data.append(val ? "true" : "false");
     }
-	return *this;
+    return *this;
 }
 
 template<class V>
