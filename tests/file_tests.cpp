@@ -17,22 +17,25 @@ protected:
 
     void SetUp() override 
     {
+        file_sink = std::make_unique<FileSink>();
         SetUp(file_template);
     }
 
     void SetUp(const std::string& file_template)
     {
         this->file_template = file_template;
-        file_sink.set_template(file_template);
+        file_sink->set_template(file_template);
     }
 
     void TearDown() override
     {
+        std::string filename = file_sink->get_filename();
+        file_sink.reset(nullptr);
         for (auto& name : filenames) {
             std::remove(name.c_str());
         }
 
-        std::remove(file_sink.get_filename().c_str());
+        std::remove(filename.c_str());
     }
 
     void add_file(const std::string& filename)
@@ -43,7 +46,7 @@ protected:
     std::string read_file(const char* file = nullptr)
     {
         std::fstream file_stream;
-        file_stream.open(file ? file : file_sink.get_filename().c_str(), std::ios::in);
+        file_stream.open(file ? file : file_sink->get_filename().c_str(), std::ios::in);
         if (file_stream.is_open()) {
             return std::string((std::istreambuf_iterator<char>(file_stream)), std::istreambuf_iterator<char>());
         } else {
@@ -51,7 +54,7 @@ protected:
         }
     }
 
-    FileSink file_sink;
+    std::unique_ptr<FileSink> file_sink;
     std::string file_template;
     std::vector<std::string> filenames;
 
@@ -72,7 +75,7 @@ private:
 TEST_F(FileTest, empty)
 {
     FakeRecordData record;
-    file_sink.write(&record, nullptr);
+    file_sink->write(&record, nullptr);
 
     EXPECT_EQ(read_file(), "\n");
 }
@@ -80,7 +83,7 @@ TEST_F(FileTest, empty)
 TEST_F(FileTest, single_line)
 {
     FakeRecordData record(LogLevel::INFO, "test test");
-    file_sink.write(&record, nullptr);
+    file_sink->write(&record, nullptr);
 
     EXPECT_EQ(read_file(), "test test\n");
 }
@@ -92,7 +95,7 @@ TEST_F(FileTest, multiple_lines)
     {
         std::string line = "line_" + std::to_string(i + 1);
         FakeRecordData record(LogLevel::INFO, line.c_str());
-        file_sink.write(&record, nullptr);
+        file_sink->write(&record, nullptr);
         expected_data.append(line);
         expected_data.append("\n");
     }
@@ -106,9 +109,9 @@ TEST_F(FileTest, rotate_files_by_day)
     FakeRecordData record1(LogLevel::INFO, "line_1");
     FakeRecordData record2(LogLevel::INFO, "line_2", "test.cpp", 0, record1.milliseconds + (24 + 2) * 3600 * 1000);
 
-    file_sink.write(&record1, nullptr);
-    add_file(file_sink.get_filename());
-    file_sink.write(&record2, nullptr);
+    file_sink->write(&record1, nullptr);
+    add_file(file_sink->get_filename());
+    file_sink->write(&record2, nullptr);
 
     EXPECT_EQ(read_file(filenames[0].c_str()), "line_1\n");
     EXPECT_EQ(read_file(), "line_2\n");
@@ -124,9 +127,9 @@ TEST_F(FileTest, rotate_files_by_hour)
     for (int i = 0; i < 100; ++i) {
         record.data = "line" + std::to_string(i + 1);
         record.milliseconds += 5 * 60 * 1000;
-        file_sink.write(&record, nullptr);
-        if (filenames.empty() || filenames.back() != file_sink.get_filename()) {
-            add_file(file_sink.get_filename());
+        file_sink->write(&record, nullptr);
+        if (filenames.empty() || filenames.back() != file_sink->get_filename()) {
+            add_file(file_sink->get_filename());
             if (!expected_data.empty()) {
                 expectations.push_back(expected_data);
                 expected_data.clear();
