@@ -105,18 +105,18 @@ std::size_t calc_formatted_time_length(const std::string& format, bool is_millis
 {
     TextData data;
     int64_t ms = 1610462801012;
-    std::tm datetime = {
-        .tm_sec = 41,
-        .tm_min = 46,
-        .tm_hour = 17,
-        .tm_mday = 12,
-        .tm_mon = 0,
-        .tm_year = 121,
-        .tm_wday = 2,
-        .tm_yday = 11,
-        .tm_isdst = 0,
-        .tm_gmtoff = 10800,
-    };
+    std::tm datetime;
+    memset(&datetime, 0, sizeof(datetime));
+    datetime.tm_sec = 41;
+    datetime.tm_min = 46;
+    datetime.tm_hour = 17;
+    datetime.tm_mday = 12;
+    datetime.tm_mon = 0;
+    datetime.tm_year = 121;
+    datetime.tm_wday = 2;
+    datetime.tm_yday = 11;
+    datetime.tm_isdst = 0;
+    
     format_date_and_time(&data, format, datetime, is_millisecons ? ms : 0);
     return data.data.length();
 }
@@ -348,7 +348,7 @@ void Formatter::format_record(ITextData *result, ILogRecordData *record)
         return;
     }
 
-    result->reserve(pimpl->calc_record_size(record));
+    result->reserve(static_cast<unsigned long>(pimpl->calc_record_size(record)));
 
     for (const auto& unit : pimpl->format_units)
     {
