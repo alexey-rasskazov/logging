@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <vector>
 #include <numeric>
+#include <cstring>
 #include "log_level.h"
 
 namespace logging {
@@ -106,7 +107,7 @@ std::size_t calc_formatted_time_length(const std::string& format, bool is_millis
     TextData data;
     int64_t ms = 1610462801012;
     std::tm datetime;
-    memset(&datetime, 0, sizeof(datetime));
+    std::memset(&datetime, 0, sizeof(datetime));
     datetime.tm_sec = 41;
     datetime.tm_min = 46;
     datetime.tm_hour = 17;
