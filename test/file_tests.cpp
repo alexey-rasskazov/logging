@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include <logger.h>
-#include <sink/file.h>
+#include <logging/logger.h>
+#include <logging/sink/file.h>
 #include <iostream>
 #include <fstream>
 #include "fake_record_data.h"

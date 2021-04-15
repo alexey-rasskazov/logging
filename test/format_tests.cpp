@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include <formatter.h>
-#include <log_level.h>
+#include <logging/formatter.h>
+#include <logging/log_level.h>
 #include "fake_record_data.h"
 
 using namespace logging;

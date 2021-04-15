@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include <logger.h>
-#include <log_record_data.h>
+#include <logging/logger.h>
+#include "../src/log_record_data.h"
 
 using namespace logging;
 

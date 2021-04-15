@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #define LOG_FILE_LINE
-#include <logger.h>
-#include <sink/cout.h>
+#include <logging/logger.h>
+#include <logging/sink/cout.h>
 
 using namespace logging;
 

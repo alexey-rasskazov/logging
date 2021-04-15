@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include <iostream>
-#include <sink/cout.h>
-#include <log_level.h>
+#include <logging/sink/cout.h>
+#include <logging/log_level.h>
 #include "fake_record_data.h"
 
 using namespace logging;

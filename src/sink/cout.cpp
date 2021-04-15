@@ -1,6 +1,6 @@
-#include "cout.h"
+#include <logging/sink/cout.h>
 #include <iostream>
-#include "../formatter.h"
+#include <logging/formatter.h>
 
 namespace logging {
 

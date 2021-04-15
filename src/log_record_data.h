@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "logging.h"
+#include <logging/logging.h>
 
 namespace logging {
 

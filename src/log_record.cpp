@@ -1,5 +1,5 @@
-#include "log_record.h"
-#include "logger.h"
+#include <logging/log_record.h>
+#include <logging/logger.h>
 #include "log_record_data.h"
 
 namespace logging {

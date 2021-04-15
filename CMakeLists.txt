@@ -1,33 +1,54 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 
 #
-# UTF-8 Utilities
+# Logging
 #
 
-project(logger)
+project(logging)
 
-add_library(logger STATIC
-    src/logger.cpp src/logger.h
-    src/log_level.cpp src/log_level.h
-    src/log_record.cpp src/log_record.h
-    src/log_record_data.cpp src/log_record_data.h
-    src/formatter.cpp src/formatter.h
-    src/logger.cpp src/logger.h
-    src/sink/base.cpp src/sink/base.h
-    src/sink/cout.cpp src/sink/cout.h
-    src/sink/file.cpp src/sink/file.h
-    src/sink/helpers/file_writer.cpp src/sink/helpers/file_writer.h
-    src/sink/helpers/filename_template.cpp src/sink/helpers/filename_template.h
+set(LOGGING_INCLUDE_DIR include)
+
+set(PUBLIC_HEADERS
+    logger.h
+    log_level.h
+    log_record.h
+    formatter.h
+    # sinks
+    sink/base.h
+    sink/cout.h
+    sink/file.h
 )
+list(TRANSFORM PUBLIC_HEADERS PREPEND "${LOGGING_INCLUDE_DIR}/logging/")
+
+set(LOGGING_SOURCES
+    logger.cpp
+    log_level.cpp
+    log_record.cpp
+    log_record_data.h
+    log_record_data.cpp
+    formatter.cpp
+    sink/base.cpp
+    sink/cout.cpp
+    sink/file.cpp
+    sink/helpers/file_writer.h
+    sink/helpers/file_writer.cpp
+    sink/helpers/filename_template.h
+    sink/helpers/filename_template.cpp
+)
+list(TRANSFORM LOGGING_SOURCES PREPEND "src/")
+
+add_library(logging STATIC ${PUBLIC_HEADERS} ${LOGGING_SOURCES})
 
 set_target_properties(
-    logger PROPERTIES
+    logging PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
 )
 
+target_include_directories(logging PUBLIC ${LOGGING_INCLUDE_DIR})
+
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 
-    add_subdirectory(tests)
+    add_subdirectory(test)
 
 endif()
