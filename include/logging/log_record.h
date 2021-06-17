@@ -1,6 +1,9 @@
 #pragma once
 
 #include "log_level.h"
+#include "logging.h"
+// #include <memory>
+#include "helper/fast_unique_ptr.hpp"
 #include <string>
 
 namespace logging {
@@ -15,18 +18,14 @@ class LogRecord
 {
 public:
 
-    /** Copy constructor */
-    LogRecord(const  LogRecord &src);
-
-    /** Destructor */
     ~LogRecord();
 
-    /** Copy operator */
-    LogRecord& operator = (const LogRecord& src);
+    LogRecord(const LogRecord&) = delete;
+    LogRecord& operator = (const LogRecord&) = delete;
 
-
-    // TODO add move semantic
-
+    LogRecord(LogRecord &&src) noexcept;
+    LogRecord& operator = (LogRecord &&src) noexcept;
+    
     /*
      *    Left shift operators to append data to the record.
      */
@@ -74,14 +73,14 @@ public:
 
 protected:
 
-    LogRecordData* data;
+    ILogRecordData* get_data() const;
 
 private:
 
     friend class Logger;
 
     template<class V>
-    static LogRecord& append_value_to_string(LogRecord* record, V value);
+    LogRecord& append_value_to_string(V value);
 
     LogRecord();
 
@@ -92,7 +91,7 @@ private:
     void append_str(const std::string& str);
 
     Logger* logger;
-    LogLevel log_level;
+    FastUniquePtr<LogRecordData, 160, 8> data;
 };
 
 template<typename T>

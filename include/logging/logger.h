@@ -34,7 +34,7 @@ public:
      * @brief Destroy the Logger object
      * 
      */
-    ~Logger();
+    ~Logger() = default;
 
     std::string get_format() const;
 
@@ -83,7 +83,7 @@ void Logger::set_formatter(T&& formatter)
 }
 
 #ifdef LOG_FILE_LINE
-#  define WRITE_LOG(log, level) (log).write(level, __FILE__, __LINE__)
+#  define WRITE_LOG(log, level) (log).write((level), __FILE__, __LINE__)
 #else
 #  define WRITE_LOG(log, level) (log).write(level)
 #endif

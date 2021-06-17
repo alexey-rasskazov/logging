@@ -11,11 +11,11 @@ class TestingLogRecord : public LogRecord
 {
 public:
 
-    TestingLogRecord(const LogRecord& src) : LogRecord(src) {}
+    TestingLogRecord(LogRecord &&src) noexcept : LogRecord(std::move(src)) {}
 
     ILogRecordData* get_data() const
     {
-        return data;
+        return LogRecord::get_data();
     }
 };
 
@@ -58,7 +58,7 @@ TEST_F(LogRecordTest, empty)
 
 TEST_F(LogRecordTest, append_text_literal)
 {
-    TestingLogRecord rec = log.write(LogLevel::WARNING) << "test message";
+    TestingLogRecord rec = std::move(log.write(LogLevel::WARNING) << "test message");
 
     fetch_record_data(rec);
     EXPECT_LE(time_delay, 1);
@@ -71,7 +71,7 @@ TEST_F(LogRecordTest, append_text_literal)
 TEST_F(LogRecordTest, append_string)
 {
     std::string message = "test message";
-    TestingLogRecord rec = log.write(LogLevel::WARNING) << message;
+    TestingLogRecord rec = std::move(log.write(LogLevel::WARNING) << message);
 
     fetch_record_data(rec);
     EXPECT_LE(time_delay, 1);
@@ -84,7 +84,7 @@ TEST_F(LogRecordTest, append_string)
 TEST_F(LogRecordTest, append_bools)
 {
     bool val = false;
-    TestingLogRecord rec = log.write(LogLevel::INFO) << val << " " << true;
+    TestingLogRecord rec = std::move(log.write(LogLevel::INFO) << val << " " << true);
 
     fetch_record_data(rec);
     EXPECT_LE(time_delay, 1);
@@ -97,7 +97,7 @@ TEST_F(LogRecordTest, append_bools)
 TEST_F(LogRecordTest, append_int)
 {
     int number = 123;
-    TestingLogRecord rec = log.write(LogLevel::INFO) << number;
+    TestingLogRecord rec = std::move(log.write(LogLevel::INFO) << number);
 
     fetch_record_data(rec);
     EXPECT_LE(time_delay, 1);
@@ -110,7 +110,7 @@ TEST_F(LogRecordTest, append_int)
 TEST_F(LogRecordTest, append_long_long)
 {
     long long number = -1234567891011;
-    TestingLogRecord rec = log.write(LogLevel::INFO) << number;
+    TestingLogRecord rec = std::move(log.write(LogLevel::INFO) << number);
 
     fetch_record_data(rec);
     EXPECT_LE(time_delay, 1);
@@ -125,9 +125,9 @@ TEST_F(LogRecordTest, append_mixed_numbers)
     int int_number = 123;
     long long ll_number = -1234567891011;
     short short_number = 12345;
-    TestingLogRecord rec = log.write(LogLevel::INFO)
+    TestingLogRecord rec = std::move(log.write(LogLevel::INFO)
         << int_number << ll_number 
-        << " " << short_number;
+        << " " << short_number);
 
     std::string expected_text = std::to_string(int_number) 
         + std::to_string(ll_number) 
@@ -151,10 +151,10 @@ TEST_F(LogRecordTest, append_mixed_all)
     float flt_val = 0.5;
     double dbl_val = 1.5;
     long double ldbl_val = 2.e40;
-    TestingLogRecord rec = log.write(LogLevel::INFO) 
+    TestingLogRecord rec = std::move(log.write(LogLevel::INFO) 
         << int_number << ll_number << " " << short_number
         << " " << b_val  << " " << message 
-        << " " << flt_val << " " << dbl_val << " " << ldbl_val;
+        << " " << flt_val << " " << dbl_val << " " << ldbl_val);
 
     std::string expected_text = 
         std::to_string(int_number) + std::to_string(ll_number) 

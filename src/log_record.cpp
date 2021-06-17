@@ -5,57 +5,39 @@
 namespace logging {
 
 /** Default constructor */
-LogRecord::LogRecord():
-      logger(nullptr)
-    , log_level(LogLevel::DISABLED)
-    , data(nullptr)
+LogRecord::LogRecord()
+    : logger(nullptr)
 { }
 
 /** Parameterized Constructor */
 LogRecord::LogRecord(Logger *logger, LogLevel level, const char *file_name, int line_number)
-{
-    this->logger = logger;
-    this->log_level = level;
-    if (is_enabled()) {
-        data = new LogRecordData(level, file_name, line_number);
-    } else {
-        data = nullptr;
-    }
-}
+    : logger(logger)
+    , data(level, file_name, line_number)
+{ }
 
-/** Copy constructor */
-LogRecord::LogRecord(const LogRecord &src)
-{
-    logger = src.logger;
-    log_level = src.log_level;
-    src.data->add_ref();
-    data = src.data;
-}
-
-/** Destructor */
 LogRecord::~LogRecord()
 {
-    if (data)
-    {
-        if (data->counter == 1)
-        {
-            logger->write_record(data);
-        }
-        data->release();
+    if (data) {
+        logger->write_record(data.get());
     }
 }
 
-/** Copy operator */
-LogRecord& LogRecord::operator = (const LogRecord& src)
+LogRecord::LogRecord(LogRecord &&src) noexcept
 {
-    if (data) {
-        data->release();
-    }
     logger = src.logger;
-    log_level = src.log_level;
-    src.data->add_ref();
-    data = src.data;
+    data = std::move(src.data);
+}
+
+LogRecord& LogRecord::operator = (LogRecord &&src) noexcept
+{
+    logger = src.logger;
+    data = std::move(src.data);
     return *this;
+}
+
+ILogRecordData* LogRecord::get_data() const 
+{
+    return data.get();
 }
 
 /**
@@ -63,7 +45,7 @@ LogRecord& LogRecord::operator = (const LogRecord& src)
  */
 bool LogRecord::is_enabled() const
 {
-    return log_level < LogLevel::DISABLED;
+    return data && data->log_level < LogLevel::DISABLED;
 }
 
 /**
@@ -100,71 +82,71 @@ LogRecord& LogRecord::operator << (bool val)
 }
 
 template<class V>
-LogRecord& LogRecord::append_value_to_string(LogRecord* record, V value)
+LogRecord& LogRecord::append_value_to_string(V value)
 {
-    if (record->is_enabled()) {
-        record->data->data.append(std::to_string(value));
+    if (is_enabled()) {
+        data->data.append(std::to_string(value));
     }
-    return *record;
+    return *this;
 }
 
 // Append integer values
 
 LogRecord& LogRecord::operator << (short val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (int val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (long val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (long long val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (unsigned short val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (unsigned int val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (unsigned long val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (unsigned long long val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 // Append floating point values
 
 LogRecord& LogRecord::operator << (float val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (double val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 LogRecord& LogRecord::operator << (long double val)
 {
-    return append_value_to_string(this, val);
+    return append_value_to_string(val);
 }
 
 } // namespace logger

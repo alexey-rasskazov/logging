@@ -9,33 +9,37 @@ LogRecordData::LogRecordData(LogLevel log_level)
 { }
 
 LogRecordData::LogRecordData(LogLevel log_level, const char* file_name, int line_number)
-    : counter(1)
-    , log_level(log_level)
+    : line_number(line_number)
     , file_name(file_name)
-    , line_number(line_number)
+    , log_level(log_level)
 {
-    auto now = std::chrono::system_clock::now();
-    auto duration = now.time_since_epoch();
-    milliseconds = static_cast<int64_t>(
-        std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
-    );
+    if (log_level < LogLevel::DISABLED) {
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        milliseconds = static_cast<int64_t>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
+        );
+    } else {
+        milliseconds = 0;
+    }
     datetime.tm_year = 0;
 }
 
-unsigned long LogRecordData::add_ref()
+LogRecordData::LogRecordData(LogRecordData &&rhs) noexcept
 {
-    return ++counter;
+    *this = std::move(rhs);
 }
 
-unsigned long LogRecordData::release()
+LogRecordData& LogRecordData::operator = (LogRecordData &&rhs) noexcept
 {
-    unsigned long count = --counter;
-
-    if (count)
-        return count;
-
-    delete this;
-    return 0;
+    data = std::move(rhs.data);
+    log_level = rhs.log_level;
+    file_name = std::move(rhs.file_name);
+    line_number = rhs.line_number;
+    milliseconds = rhs.milliseconds;
+    datetime = rhs.datetime;
+    rhs.milliseconds = 0;
+    return *this;
 }
 
 const char* LogRecordData::get_data() const

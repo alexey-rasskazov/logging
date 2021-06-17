@@ -13,18 +13,17 @@ class LogRecordData final : public ILogRecordData
 public:
 
     LogRecordData(LogLevel log_level);
-
     LogRecordData(LogLevel log_level, const char* file_name, int line_number);
 
-    // disable copy and move semantic
+    LogRecordData(LogRecordData &&src) noexcept;
+    LogRecordData& operator = (LogRecordData &&src) noexcept;
 
-    LogRecordData(const LogRecordData& rhs) = delete;
-    LogRecordData& operator = (const LogRecordData& src) = delete;
-    LogRecordData(LogRecordData&& rhs) = delete;
-    LogRecordData& operator = (LogRecordData&& src) = delete;
+    // disable copy semantic
 
-    unsigned long add_ref();
-    unsigned long release();
+    LogRecordData(const LogRecordData&) = delete;
+    LogRecordData& operator = (const LogRecordData&) = delete;
+
+    bool empty() const { return milliseconds == 0; }
 
     // ILogRecordData interface
 
@@ -38,17 +37,14 @@ public:
 
 private:
 
-    ~LogRecordData() = default;
-
     friend class LogRecord;
 
-    unsigned long counter;
-    std::string data;
-    LogLevel log_level;
-    std::string file_name;
-    int line_number;
     int64_t milliseconds;
+    int line_number;
+    std::string file_name;
+    std::string data;
     mutable std::tm datetime;
+    LogLevel log_level;
 };
 
 }
