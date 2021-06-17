@@ -238,7 +238,7 @@ struct Formatter::Impl
         format_str = format;
 
         format_length = std::accumulate(
-            format_units.begin(), format_units.end(), 0,
+            format_units.begin(), format_units.end(), size_t{0},
             [](size_t a, const FormatUnit& b) { return a + b.get_length(); }
         );
     }

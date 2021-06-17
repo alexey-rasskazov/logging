@@ -1,4 +1,5 @@
 #include "fake_record_data.h"
+#include <logging/helper/datetime.h>
 
 const char* FakeRecordData::get_data() const
 {
@@ -22,7 +23,9 @@ int64_t FakeRecordData::get_time() const
 
 std::tm FakeRecordData::get_tm() const
 {
-    time_t t = static_cast<time_t>(milliseconds / 1000); return *localtime(&t);
+    std::tm dt;
+    logging::local_datetime(&dt, static_cast<time_t>(milliseconds / 1000));
+    return dt;
 }
 
 const char* FakeRecordData::get_file_name() const

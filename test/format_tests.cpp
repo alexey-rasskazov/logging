@@ -2,6 +2,7 @@
 #include <logging/formatter.h>
 #include <logging/log_level.h>
 #include "fake_record_data.h"
+#include <logging/helper/datetime.h>
 
 using namespace logging;
 
@@ -16,7 +17,9 @@ std::string format_datatime(const char *format, int64_t millisecodns)
 {
     char time_str[40];
     time_t t = millisecodns / 1000;
-    std::strftime(time_str, sizeof(time_str), format, std::localtime(&t));
+    std::tm dt;
+    local_datetime(&dt, t);
+    std::strftime(time_str, sizeof(time_str), format, &dt);
     return time_str;
 }
 

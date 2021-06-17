@@ -13,6 +13,7 @@ set(PUBLIC_HEADERS
     log_level.h
     log_record.h
     formatter.h
+    helper/datetime.h
     # sinks
     sink/base.h
     sink/cout.h
@@ -27,6 +28,7 @@ set(LOGGING_SOURCES
     log_record_data.h
     log_record_data.cpp
     formatter.cpp
+    helper/datetime.cpp
     sink/base.cpp
     sink/cout.cpp
     sink/file.cpp
