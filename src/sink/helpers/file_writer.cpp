@@ -22,7 +22,7 @@ LogFile::LogFile(const std::string& filename)
 LogFile::~LogFile()
 { }
     
-void LogFile::write(std::shared_ptr<FileRecordData>& data)
+void LogFile::write(FileRecordData &data)
 {
     if (file_stream.fail()) {
         return;
@@ -33,7 +33,7 @@ void LogFile::write(std::shared_ptr<FileRecordData>& data)
             return;
         }
     }
-    file_stream.write(data->data.c_str(), data->data.length());
+    file_stream.write(data.data.c_str(), data.data.length());
     file_stream.write("\n", 1);
     file_stream.flush();
 }

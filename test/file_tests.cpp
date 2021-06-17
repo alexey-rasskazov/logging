@@ -17,14 +17,13 @@ protected:
 
     void SetUp() override 
     {
-        file_sink = std::make_unique<FileSink>();
         SetUp(file_template);
     }
 
     void SetUp(const std::string& file_template)
     {
         this->file_template = file_template;
-        file_sink->set_template(file_template);
+        file_sink = std::make_unique<FileSink>(file_template);
     }
 
     void TearDown() override

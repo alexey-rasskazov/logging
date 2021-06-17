@@ -33,12 +33,13 @@ FileSink::Impl::Impl()
 
 void FileSink::Impl::write_record(ILogRecordData *record, IFormatter *formatter)
 {
-    auto data = std::make_shared<FileRecordData>();
+    FileRecordData data;
     if (formatter) {
-        formatter->format_record(data.get(), record);
+        formatter->format_record(&data, record);
+    } else {
+        data.data = record->get_data();
     }
 
-    data->data = record->get_data();
     std::tm record_tm = record->get_tm();
     if (!file || filename_template.is_need_rotate(record_tm, last_record_tm)) {
         file = std::make_unique<LogFile>(filename_template.generate_filename(record_tm));
@@ -54,21 +55,13 @@ void FileSink::Impl::write_record(ILogRecordData *record, IFormatter *formatter)
  *
  */
 
-FileSink::FileSink()
+FileSink::FileSink(const std::string& file_template, unsigned int max_num_files)
     : pimpl(std::make_unique<Impl>())
-{ }
-
-void FileSink::init_pimpl()
-{
-    pimpl = std::make_unique<Impl>();
-}
-
-FileSink::~FileSink() = default;
-
-void FileSink::set_template(const std::string& file_template, unsigned int max_num_files)
 {
     pimpl->filename_template.set_template(file_template);
 }
+
+FileSink::~FileSink() = default;
 
 std::string FileSink::get_filename() const
 {

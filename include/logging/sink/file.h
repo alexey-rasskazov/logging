@@ -22,20 +22,30 @@ class FileSink : public BaseSink
 {
 public:
 
-    FileSink();
+    /**
+     * @brief Construct a new File Sink object
+     * 
+     * @param file_template     
+     * @param max_num_files
+     */
+    FileSink(const std::string &file_template, unsigned int max_num_files = 0);
 
     /**
      * @brief Construct a new File Sink object
      * 
-     * @tparam T The template parameter can be logging::Formatter, std::string, and char*
+     * @tparam Fmt
      * @param formatter 
+     * @param file_template 
+     * @param max_num_files 
      */
-    template<class T>
-    FileSink(T&& formatter);
+    template <typename Fmt>
+    FileSink(Fmt &&formatter, const std::string &file_template, unsigned int max_num_files = 0);
+
+    explicit FileSink() = delete;
+    explicit FileSink(const Formatter &formatter) = delete;
+    explicit FileSink(Formatter &&formatter) = delete;
 
     ~FileSink();
-
-    void set_template(const std::string& file_template, unsigned int max_num_files = 0);
 
     std::string get_filename() const;
 
@@ -45,16 +55,13 @@ private:
 
     class Impl;
     std::unique_ptr<Impl> pimpl;
-
-    void init_pimpl();
 };
 
-template<class T>
-FileSink::FileSink(T&& formatter)
-    : BaseSink(std::forward<T>(formatter))
-    , pimpl(nullptr)
+template <typename Fmt>
+FileSink::FileSink(Fmt &&formatter, const std::string& file_template, unsigned int max_num_files) 
+    : FileSink(file_template, max_num_files)
 {
-    init_pimpl();
+    set_formatter(std::forward<Fmt>(formatter));
 }
 
 } // namespace logging

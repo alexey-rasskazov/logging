@@ -22,7 +22,7 @@ public:
 
     virtual ~LogFile();
     
-    virtual void write(std::shared_ptr<FileRecordData>& data);
+    virtual void write(FileRecordData &data);
 
     std::string get_filename() const;
     

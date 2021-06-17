@@ -23,7 +23,6 @@ struct CoutData : public ITextData
 
 void CoutSink::write(ILogRecordData *record, IFormatter *logger_formatter)
 {
-    
     if (sink_formatter) {
         write_formatted(record, sink_formatter.get());
     } else if (logger_formatter) {
