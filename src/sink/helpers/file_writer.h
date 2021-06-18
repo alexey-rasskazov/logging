@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <fstream>
+#include <filesystem>
 #include <logging/logging.h>
 
 namespace logging {
@@ -28,8 +29,10 @@ public:
     
 private:
 
-    std::string file_name;
+    std::filesystem::path file_path;
     std::fstream file_stream;
+
+    bool open_file();
 };
 
 

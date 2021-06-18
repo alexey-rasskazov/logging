@@ -14,8 +14,16 @@ add_executable(functional_tests
     logging_tests.cpp
 )
 
-target_compile_features(unit_tests PRIVATE cxx_std_14)
-target_compile_features(functional_tests PRIVATE cxx_std_14)
+set_target_properties(
+    unit_tests PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+set_target_properties(
+    functional_tests PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
 
 target_include_directories(unit_tests PUBLIC ../include)
 target_include_directories(functional_tests PUBLIC ../include)

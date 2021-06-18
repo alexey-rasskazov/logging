@@ -62,7 +62,7 @@ protected:
      * 
      */
     FileTest() : 
-        file_template("test.log")
+        file_template("test_logs/test.log")
     { }
 
 private:
@@ -104,7 +104,7 @@ TEST_F(FileTest, multiple_lines)
 
 TEST_F(FileTest, rotate_files_by_day)
 {
-    SetUp("rotation_test_day_%Y-%m-%d.log");
+    SetUp("test_logs/rotation_test_day_%Y-%m-%d.log");
     FakeRecordData record1(LogLevel::INFO, "line_1");
     FakeRecordData record2(LogLevel::INFO, "line_2", "test.cpp", 0, record1.milliseconds + (24 + 2) * 3600 * 1000);
 
@@ -118,7 +118,7 @@ TEST_F(FileTest, rotate_files_by_day)
 
 TEST_F(FileTest, rotate_files_by_hour)
 {
-    SetUp("rotation_test_hour_%Y-%m-%d_%H.log");
+    SetUp("test_logs/log_by_hour/rotation_test_hour_%Y-%m-%d_%H.log");
     std::string expected_data;
     FakeRecordData record;
     std::vector<std::string> expectations;

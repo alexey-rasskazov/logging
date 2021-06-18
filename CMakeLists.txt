@@ -42,7 +42,7 @@ add_library(logging STATIC ${PUBLIC_HEADERS} ${LOGGING_SOURCES})
 
 set_target_properties(
     logging PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
 
