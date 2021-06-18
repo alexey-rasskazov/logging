@@ -25,9 +25,8 @@ set(LOGGING_SOURCES
     logger.cpp
     log_level.cpp
     log_record.cpp
-    log_record_data.h
-    log_record_data.cpp
     formatter.cpp
+    helper/log_record_data.cpp
     helper/datetime.cpp
     sink/base.cpp
     sink/cout.cpp

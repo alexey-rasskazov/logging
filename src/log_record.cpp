@@ -1,12 +1,12 @@
 #include <logging/log_record.h>
 #include <logging/logger.h>
-#include "log_record_data.h"
 
 namespace logging {
 
 /** Default constructor */
 LogRecord::LogRecord()
     : logger(nullptr)
+    , data(LogLevel::DISABLED)
 { }
 
 /** Parameterized Constructor */
@@ -18,11 +18,12 @@ LogRecord::LogRecord(Logger *logger, LogLevel level, const char *file_name, int 
 LogRecord::~LogRecord()
 {
     if (data) {
-        logger->write_record(data.get());
+        logger->write_record(&data);
     }
 }
 
 LogRecord::LogRecord(LogRecord &&src) noexcept
+    : data(LogLevel::DISABLED)
 {
     logger = src.logger;
     data = std::move(src.data);
@@ -35,9 +36,9 @@ LogRecord& LogRecord::operator = (LogRecord &&src) noexcept
     return *this;
 }
 
-ILogRecordData* LogRecord::get_data() const 
+const ILogRecordData* LogRecord::get_data() const 
 {
-    return data.get();
+    return &data;
 }
 
 /**
@@ -45,7 +46,7 @@ ILogRecordData* LogRecord::get_data() const
  */
 bool LogRecord::is_enabled() const
 {
-    return data && data->log_level < LogLevel::DISABLED;
+    return data && data.log_level < LogLevel::DISABLED;
 }
 
 /**
@@ -54,7 +55,7 @@ bool LogRecord::is_enabled() const
 LogRecord& LogRecord::operator << (const std::string &val)
 {
     if (is_enabled()) {
-        data->data.append(val);
+        data.data.append(val);
     }
     return *this;
 }
@@ -65,7 +66,7 @@ LogRecord& LogRecord::operator << (const std::string &val)
 LogRecord& LogRecord::operator << (const char* val)
 {
     if (is_enabled()) {
-        data->data.append(val);
+        data.data.append(val);
     }
     return *this;
 }
@@ -76,7 +77,7 @@ LogRecord& LogRecord::operator << (const char* val)
 LogRecord& LogRecord::operator << (bool val)
 {
     if (is_enabled()) {
-        data->data.append(val ? "true" : "false");
+        data.data.append(val ? "true" : "false");
     }
     return *this;
 }
@@ -85,7 +86,7 @@ template<class V>
 LogRecord& LogRecord::append_value_to_string(V value)
 {
     if (is_enabled()) {
-        data->data.append(std::to_string(value));
+        data.data.append(std::to_string(value));
     }
     return *this;
 }

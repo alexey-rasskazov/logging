@@ -23,7 +23,7 @@ public:
     LogRecordData(const LogRecordData&) = delete;
     LogRecordData& operator = (const LogRecordData&) = delete;
 
-    bool empty() const { return milliseconds == 0; }
+    explicit operator bool() const noexcept { return milliseconds != 0; }
 
     // ILogRecordData interface
 

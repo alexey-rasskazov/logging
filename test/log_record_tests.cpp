@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <logging/logger.h>
-#include "../src/log_record_data.h"
+#include <logging/helper/log_record_data.h>
 
 using namespace logging;
 
@@ -13,7 +13,7 @@ public:
 
     TestingLogRecord(LogRecord &&src) noexcept : LogRecord(std::move(src)) {}
 
-    ILogRecordData* get_data() const
+    const ILogRecordData* get_data() const
     {
         return LogRecord::get_data();
     }
@@ -35,7 +35,7 @@ protected:
 
     void fetch_record_data(TestingLogRecord& rec)
     {
-        ILogRecordData* data = rec.get_data();
+        auto data = rec.get_data();
         time_delay = int64_t(time(nullptr)) - data->get_time()/1000;
         log_level = data->get_level();
         record_text = data->get_data();

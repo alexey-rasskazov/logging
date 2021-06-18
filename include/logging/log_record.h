@@ -2,8 +2,7 @@
 
 #include "log_level.h"
 #include "logging.h"
-// #include <memory>
-#include "helper/fast_unique_ptr.hpp"
+#include "helper/log_record_data.h"
 #include <string>
 
 namespace logging {
@@ -73,7 +72,7 @@ public:
 
 protected:
 
-    ILogRecordData* get_data() const;
+    const ILogRecordData* get_data() const;
 
 private:
 
@@ -91,7 +90,7 @@ private:
     void append_str(const std::string& str);
 
     Logger* logger;
-    FastUniquePtr<LogRecordData, 160, 8> data;
+    LogRecordData data;
 };
 
 template<typename T>
