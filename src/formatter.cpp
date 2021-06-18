@@ -22,6 +22,70 @@ struct TextData : public ITextData
     }
 };
 
+bool is_allowed_fmt_char(char c) {
+    switch (c) {
+        case 'a':
+        case 'A':
+        case 'b':
+        case 'B':
+        case 'c':
+        case 'C':
+        case 'd':
+        case 'D':
+        case 'e':
+        case 'f':   // milliseconds (non standard)
+        case 'F':
+        case 'g':
+        case 'G':
+        case 'h':
+        case 'H':
+        case 'I':
+        case 'j':
+        case 'm':
+        case 'M':
+        case 'n':
+        case 'p':
+        case 'r':
+        case 'R':
+        case 'S':
+        case 't':
+        case 'T':
+        case 'u':
+        case 'U':
+        case 'V':
+        case 'w':
+        case 'W':
+        case 'x':
+        case 'X':
+        case 'y':
+        case 'Y':
+        case 'z':
+        case 'Z':
+        case '%':
+            return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Removes the '%' symbol if it placed before an undefined format specifier.
+ * 
+ * @param format 
+ */
+void fix_format(std::string &format)
+{
+    size_t i = 0;
+    while (i < format.length()) {
+        if (format[i] == '%') {
+            if (!is_allowed_fmt_char(format[i + 1])) {
+                format.erase(i, 1);
+                continue;
+            }
+        }
+        ++i;
+    }
+}
+
 /**
  * @brief Detects if format has milliseconds part (%f sequence)
  * 
@@ -57,10 +121,11 @@ bool is_format_has_milliseconds(const std::string& format)
  */
 bool prepare_time_format(std::string& format)
 {
+    fix_format(format);
+
     bool has_ms = is_format_has_milliseconds(format);
  
     if (has_ms) {
-        
         size_t len = format.length();
         if (len) {
             size_t i = 0;
@@ -99,7 +164,7 @@ bool prepare_time_format(std::string& format)
 void format_date_and_time(ITextData *target, const std::string& format, std::tm& datetime, int64_t milliseconds)
 {
     char time_str[40];
-
+    
     std::strftime(time_str, sizeof(time_str), format.c_str(), &datetime);
     if (milliseconds) {
         char time_str_ms[40];

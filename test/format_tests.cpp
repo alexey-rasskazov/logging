@@ -188,7 +188,7 @@ TEST(LogFormatterTest, format_wrong_time_format1)
     FakeRecordData rec;
 
     std::string line = fmt.format_record(&rec); 
-    std::string expected_str = "%";
+    std::string expected_str = format_datatime("%H:%M:%S", rec.get_time());
 
     EXPECT_EQ(line, expected_str);
 }
@@ -199,10 +199,24 @@ TEST(LogFormatterTest, format_wrong_time_format2)
     FakeRecordData rec;
 
     std::string line = fmt.format_record(&rec); 
-    std::string expected_str = format_datatime("%H%q", rec.get_time());
+    std::string expected_str = format_datatime("%Hq", rec.get_time());
 
     EXPECT_EQ(line, expected_str);
 }
+
+TEST(LogFormatterTest, format_wrong_time_format3)
+{
+    std::string wrong_fmt = "%* %a%A %b%B %c%C %d%D %e%E %F %g%G %h%H %i%I %j%J %m%M %n%N %p%P %r%R %s%S %t%T %u%U %v%V %w%W %x%X %y%Y %z%Z %% %$%&%?%";
+    std::string right_fmt = "* %a%A %b%B %c%C %d%D %eE %F %g%G %h%H i%I %jJ %m%M %nN %pP %r%R s%S %t%T %u%U v%V %w%W %x%X %y%Y %z%Z %% $&?";
+    Formatter fmt("${time:"+ wrong_fmt +"}");
+    FakeRecordData rec;
+
+    std::string line = fmt.format_record(&rec); 
+    std::string expected_str = format_datatime(right_fmt.c_str(), rec.get_time());
+
+    EXPECT_EQ(line, expected_str);
+}
+
 
 TEST(LogFormatterTest, get_format)
 {
