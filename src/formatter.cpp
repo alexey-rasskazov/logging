@@ -31,18 +31,19 @@ struct TextData : public ITextData
  */
 bool is_format_has_milliseconds(const std::string& format)
 {
-    std::size_t i = 0;
     std::size_t len = format.length();
-
-    while (i < len - 1) {
-        if (format[i] == '%') {
-            if (format[i + 1] == '%') {
-                ++i;
-            } else if (format[i + 1] == 'f') {
-                return true;
+    if (len) {
+        std::size_t i = 0;
+        while (i < len - 1) {
+            if (format[i] == '%') {
+                if (format[i + 1] == '%') {
+                    ++i;
+                } else if (format[i + 1] == 'f') {
+                    return true;
+                }
             }
+            ++i;
         }
-        ++i;
     }
     return false;
 }
@@ -59,22 +60,29 @@ bool prepare_time_format(std::string& format)
     bool has_ms = is_format_has_milliseconds(format);
  
     if (has_ms) {
-        size_t i = 0;
+        
         size_t len = format.length();
-        while (i < len - 1) {
-            if (format[i] == '%') {
-                if (format[i + 1] == '%') {
-                    format.replace(i, 2, "%%%%");
-                    i += 3;
-                    len = format.length();
-                } else if (format[i + 1] == 'f') {
-                    format.replace(i, 2, "%%03u");
-                    i += 4;
-                    len = format.length();
+        if (len) {
+            size_t i = 0;
+            while (i < len - 1) {
+                if (format[i] == '%') {
+                    if (format[i + 1] == '%') {
+                        format.replace(i, 2, "%%%%");
+                        i += 3;
+                        len = format.length();
+                    } else if (format[i + 1] == 'f') {
+                        format.replace(i, 2, "%%03u");
+                        i += 4;
+                        len = format.length();
+                    }
                 }
+                ++i;
             }
-            ++i;
         }
+    }
+
+    if (format.empty()) {
+        format = "%H:%M:%S";
     }
 
     return has_ms;

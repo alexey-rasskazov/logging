@@ -159,6 +159,51 @@ TEST(LogFormatterTest, format_data_time_ms)
     EXPECT_EQ(line, expected_str);
 }
 
+TEST(LogFormatterTest, format_default_time)
+{
+    Formatter fmt("${time}");
+    FakeRecordData rec;
+
+    std::string line = fmt.format_record(&rec); 
+    std::string expected_str = format_datatime("%H:%M:%S", rec.get_time());
+
+    EXPECT_EQ(line, expected_str);
+}
+
+
+TEST(LogFormatterTest, format_default_time_colon)
+{
+    Formatter fmt("${time:}");
+    FakeRecordData rec;
+
+    std::string line = fmt.format_record(&rec); 
+    std::string expected_str = format_datatime("%H:%M:%S", rec.get_time());
+
+    EXPECT_EQ(line, expected_str);
+}
+
+TEST(LogFormatterTest, format_wrong_time_format1)
+{
+    Formatter fmt("${time:%}");
+    FakeRecordData rec;
+
+    std::string line = fmt.format_record(&rec); 
+    std::string expected_str = "%";
+
+    EXPECT_EQ(line, expected_str);
+}
+
+TEST(LogFormatterTest, format_wrong_time_format2)
+{
+    Formatter fmt("${time:%H%q}");
+    FakeRecordData rec;
+
+    std::string line = fmt.format_record(&rec); 
+    std::string expected_str = format_datatime("%H%q", rec.get_time());
+
+    EXPECT_EQ(line, expected_str);
+}
+
 TEST(LogFormatterTest, get_format)
 {
     const std::string format_str = "[${level_name}] ${file} ${line}: ${message}";
