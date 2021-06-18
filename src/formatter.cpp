@@ -77,10 +77,12 @@ void fix_format(std::string &format)
     size_t i = 0;
     while (i < format.length()) {
         if (format[i] == '%') {
-            if (!is_allowed_fmt_char(format[i + 1])) {
+            if (format[i + 1] == '%') {
+                ++i;
+            } else if (!is_allowed_fmt_char(format[i + 1])) {
                 format.erase(i, 1);
                 continue;
-            }
+            } 
         }
         ++i;
     }

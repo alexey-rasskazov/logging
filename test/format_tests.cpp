@@ -224,8 +224,8 @@ TEST(LogFormatterTest, format_wrong_time_format2)
 
 TEST(LogFormatterTest, format_wrong_time_format3)
 {
-    auto wrong_fmt = explode("%* %a%A %b%B %c%C %d%D %e%E %F %g%G %h%H %i%I %j%J %m%M %n%N %p%P %r%R %s%S %t%T %u%U %v%V %w%W %x%X %y%Y %z%Z %% %$%&%?% ");
-    auto right_fmt = explode("* %a%A %b%B %c%C %d%D %eE %F %g%G %h%H i%I %jJ %m%M %nN %pP %r%R s%S %t%T %u%U v%V %w%W %x%X %y%Y %z%Z %% $&? ");
+    auto wrong_fmt = explode("%* %a%A %b%B %c%C %d%D %e%E %F %g%G %h%H %i%I %j%J %m%M %n%N %p%P %r%R %s%S %t%T %u%U %v%V %w%W %x%X %y%Y %z%Z %% %$%&%?%");
+    auto right_fmt = explode("* %a%A %b%B %c%C %d%D %eE %F %g%G %h%H i%I %jJ %m%M %nN %pP %r%R s%S %t%T %u%U v%V %w%W %x%X %y%Y %z%Z %% $&?");
     
     std::string log_str;
     FakeRecordData rec;
