@@ -182,7 +182,7 @@ TEST_F(FileTest, template_wrong_syntax)
     try {
         SetUp("test%_logs/%Y/rotation_test_hour_%Y-%m-%d_%H.log");
         FAIL();
-    } catch (FileTemplateException &e) {
+    } catch (FileTemplateException&) {
         SUCCEED();
     } catch(...) {
         FAIL();
@@ -194,7 +194,7 @@ TEST_F(FileTest, template_empty)
     try {
         SetUp("");
         FAIL();
-    } catch (FileTemplateException &e) {
+    } catch (FileTemplateException&) {
         SUCCEED();
     } catch(...) {
         FAIL();
@@ -206,7 +206,7 @@ TEST_F(FileTest, template_end_slash)
     try {
         SetUp("test_logs/%Y/rotation_test_hour_%Y-%m-%d_%H/");
         FAIL();
-    } catch (FileTemplateException &e) {
+    } catch (FileTemplateException&) {
         SUCCEED();
     } catch(...) {
         FAIL();

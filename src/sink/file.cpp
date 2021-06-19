@@ -87,10 +87,12 @@ void FileSink::Impl::remove_old_files(const std::filesystem::path &dir)
     }
 
     if (count > max_num_files) {
-        if (!std::filesystem::remove(oldest_file_path)) {
+        std::error_code code;
+        if (!std::filesystem::remove(oldest_file_path, code)) {
             std::cerr 
                 << "Can't remove old log file: " 
                 << oldest_file_path 
+                << ", code: " << code
                 << std::endl;
         }
     }
