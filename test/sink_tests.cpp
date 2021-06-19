@@ -43,7 +43,7 @@ struct FakeFormatter : public IFormatter
  * 
  */
 
-class CoutHandlerTest : public ::testing::Test
+class CoutSinkTest : public ::testing::Test
 {
 protected:
 
@@ -65,7 +65,7 @@ protected:
         std::cout.rdbuf(external_buf);
     }
     
-    CoutSink handler;
+    CoutSink sink;
     
     std::string fetch_output()
     {
@@ -80,36 +80,36 @@ private:
     std::streambuf *external_buf;
 };
 
-TEST_F(CoutHandlerTest, empty)
+TEST_F(CoutSinkTest, empty)
 {
     EXPECT_EQ(fetch_output(), "");
 }
 
-TEST_F(CoutHandlerTest, single_message)
+TEST_F(CoutSinkTest, single_message)
 {
     FakeRecordData rec{LogLevel::INFO, "test"};
     std::string expected_output = rec.data + nl;
     
-    handler.write(&rec, nullptr);
+    sink.write(&rec, nullptr);
     
     EXPECT_EQ(fetch_output(), expected_output);
 }
 
-TEST_F(CoutHandlerTest, multiple_messages)
+TEST_F(CoutSinkTest, multiple_messages)
 {
     FakeRecordData rec1{LogLevel::INFO, "message 1"};
     FakeRecordData rec2{LogLevel::INFO, "message 2"};
     FakeRecordData rec3{LogLevel::INFO, "message 3"};
     std::string expected_output = rec1.data + nl + rec2.data + nl + rec3.data + nl;
     
-    handler.write(&rec1, nullptr);
-    handler.write(&rec2, nullptr);
-    handler.write(&rec3, nullptr);
+    sink.write(&rec1, nullptr);
+    sink.write(&rec2, nullptr);
+    sink.write(&rec3, nullptr);
 
     EXPECT_EQ(fetch_output(), expected_output);
 }
 
-TEST_F(CoutHandlerTest, logger_formatter)
+TEST_F(CoutSinkTest, logger_formatter)
 {
     FakeFormatter fmt("TEST_FORMAT ");
     FakeRecordData rec1{LogLevel::INFO, "message 1"};
@@ -117,7 +117,7 @@ TEST_F(CoutHandlerTest, logger_formatter)
     fmt.format_record(&data, &rec1);
     std::string expected_output = data.data + nl;
     
-    handler.write(&rec1, &fmt);
+    sink.write(&rec1, &fmt);
 
     EXPECT_EQ(fetch_output(), expected_output);
 }

@@ -43,7 +43,7 @@ struct IFormatter
 };
 
 /**
- * @brief Handler interface
+ * @brief Log sink interface
  * 
  */
 struct ILogSink

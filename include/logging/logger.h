@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <memory>
 #include "logging.h"
 #include "log_record.h"
@@ -19,7 +18,7 @@ public:
      * @brief Construct a new Logger object
      * 
      */
-    Logger();
+    Logger(LogLevel level = LogLevel::DEBUG);
 
     /**
      * @brief Construct a new Logger object
@@ -28,13 +27,13 @@ public:
      * @param formatter 
      */
     template<class T>
-    Logger(T&& formatter);
+    Logger(T&& formatter, LogLevel level = LogLevel::DEBUG);
 
     /**
      * @brief Destroy the Logger object
      * 
      */
-    ~Logger() = default;
+    ~Logger();
 
     std::string get_format() const;
 
@@ -47,13 +46,13 @@ public:
 
     LogRecord write(LogLevel level, const char* file_name, int line_number);
 
-    void set_log_level(LogLevel level);
+    void set_level(LogLevel level);
 
-    LogLevel get_log_level() const;
+    LogLevel get_level() const;
 
-    bool add_handler(ILogSink* handler);
+    bool add_sink(ILogSink* sink);
 
-    void remove_handler(ILogSink* handler);
+    void remove_sink(ILogSink* sink);
 
 private:
 
@@ -61,18 +60,18 @@ private:
 
     void write_record(ILogRecordData* record);
 
+    class Impl;
+
+    std::unique_ptr<Impl> pimpl;
     LogLevel log_level;
-
     std::unique_ptr<Formatter> log_formatter;
-
-    std::vector<ILogSink*> handlers;
 };
 
 template<class T>
-Logger::Logger(T&& formatter)
-    : log_formatter(std::make_unique<Formatter>(std::forward<T>(formatter)))
-    , log_level(LogLevel::DEBUG)
-{ }
+Logger::Logger(T&& formatter, LogLevel level) : Logger(level)
+{
+    log_formatter = std::make_unique<Formatter>(std::forward<T>(formatter));
+}
 
 template<class T>
 void Logger::set_formatter(T&& formatter)

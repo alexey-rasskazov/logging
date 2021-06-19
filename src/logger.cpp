@@ -1,9 +1,48 @@
 #include <logging/logger.h>
+#include <vector>
 #include <algorithm>
 
 namespace logging {
 
-Logger::Logger() : log_level(LogLevel::DEBUG) {}
+class Logger::Impl
+{
+public:
+
+    bool add_sink(ILogSink* sink)
+    {
+        if (std::find(sinks.begin(), sinks.end(), sink) == sinks.end()) {
+            sinks.push_back(sink);
+            return true;
+        }
+        return false;
+    }
+
+    void remove_sink(ILogSink* sink)
+    {
+        sinks.erase(
+            std::remove(sinks.begin(), sinks.end(), sink),
+            sinks.end()
+        );
+    }
+
+    void write_record(ILogRecordData* record, Formatter *formatter)
+    {
+        for (auto sink : sinks) {
+            sink->write(record, formatter);
+        }
+    }
+
+private:
+    std::vector<ILogSink*> sinks;
+};
+
+Logger::Logger(LogLevel level)
+    : pimpl{std::make_unique<Impl>()}
+    , log_level(level)
+{ }
+
+
+Logger::~Logger() = default;
 
 std::string Logger::get_format() const
 {
@@ -33,38 +72,29 @@ LogRecord Logger::write(LogLevel level, const char* file_name, int line_number)
     return {this, level, file_name, line_number};
 }
 
-void Logger::set_log_level(LogLevel level) 
+void Logger::set_level(LogLevel level) 
 {
     log_level = level;
 }
 
-LogLevel Logger::get_log_level() const 
+LogLevel Logger::get_level() const 
 {
     return log_level;
 }
 
-bool Logger::add_handler(ILogSink* handler)
+bool Logger::add_sink(ILogSink* sink)
 {
-    if (std::find(handlers.begin(), handlers.end(), handler) == handlers.end()) {
-        handlers.push_back(handler);
-        return true;
-    }
-    return false;
+    return pimpl->add_sink(sink);
 }
 
-void Logger::remove_handler(ILogSink* handler)
+void Logger::remove_sink(ILogSink* sink)
 {
-    handlers.erase(
-        std::remove(handlers.begin(), handlers.end(), handler),
-        handlers.end()
-    );
+    pimpl->remove_sink(sink);
 }
 
 void Logger::write_record(ILogRecordData* record)
 {
-    for (auto handler : handlers) {
-        handler->write(record, log_formatter.get());
-    }
+    pimpl->write_record(record, log_formatter.get());
 }
 
 } // namespace logger

@@ -45,7 +45,7 @@ private:
 TEST_F(LoggingTest, single_text_message)
 {
     Logger log;
-    log.add_handler(&cout_sink);
+    log.add_sink(&cout_sink);
 
     log.write(LogLevel::INFO) << "Test message";
 
@@ -55,7 +55,7 @@ TEST_F(LoggingTest, single_text_message)
 TEST_F(LoggingTest, complex_message)
 {
     Logger log;
-    log.add_handler(&cout_sink);
+    log.add_sink(&cout_sink);
 
     log.write(LogLevel::INFO) << "Test message " << 12345 << " " << true;
 
@@ -65,7 +65,7 @@ TEST_F(LoggingTest, complex_message)
 TEST_F(LoggingTest, multiple_messages)
 {
     Logger log;
-    log.add_handler(&cout_sink);
+    log.add_sink(&cout_sink);
     std::string expected_output;
 
     for (int i = 0; i < 10; ++i) {
@@ -79,7 +79,7 @@ TEST_F(LoggingTest, multiple_messages)
 TEST_F(LoggingTest, multiple_formatted_messages)
 {
     Logger log;
-    log.add_handler(&cout_sink);
+    log.add_sink(&cout_sink);
     cout_sink.set_formatter(Formatter("${level_name} ${message}"));
     std::string expected_output;
 
@@ -96,7 +96,7 @@ TEST_F(LoggingTest, multiple_formatted_messages)
 TEST_F(LoggingTest, multiple_formatted_messages_filename_line)
 {
     Logger log;
-    log.add_handler(&cout_sink);
+    log.add_sink(&cout_sink);
     cout_sink.set_formatter(Formatter("${level_name} [${file}:${line}] ${message}"));
     std::string expected_output;
 
@@ -115,8 +115,8 @@ TEST_F(LoggingTest, multiple_formatted_messages_filename_line)
 TEST_F(LoggingTest, formatted_messages_level)
 {
     Logger log;
-    log.set_log_level(LogLevel::WARNING);
-    log.add_handler(&cout_sink);
+    log.set_level(LogLevel::WARNING);
+    log.add_sink(&cout_sink);
     cout_sink.set_formatter("${level_name} ${message}");
     std::string expected_output;
 
