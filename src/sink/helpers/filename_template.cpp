@@ -1,6 +1,11 @@
 #include "filename_template.h"
 #include <cstring>
-#include <logging/sink/file_template_exception.hpp>
+#include <logging/sink/file_template_exception.h>
+
+const char* logging::FileTemplateException::what() const noexcept
+{
+    return desc.c_str();
+}
 
 enum class TemplateTokenType
 {

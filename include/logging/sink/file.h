@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base.h"
-#include "file_template_exception.hpp"
+#include "file_template_exception.h"
 
 namespace logging {
 

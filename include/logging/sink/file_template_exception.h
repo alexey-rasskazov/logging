@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 namespace logging {
@@ -12,10 +14,7 @@ public:
         desc.append(std::forward<T>(msg));
     }
 
-    virtual const char* what() const noexcept override
-    {
-        return desc.c_str();
-    }
+    virtual const char* what() const noexcept override;
 
 private:
     std::string desc;
