@@ -178,7 +178,7 @@ static bool parse_int(const char *str, int count, int &result)
 {
     int res = 0;
     for (int i = 0; i < count; ++i) {
-        char c = *str;
+        char c = *str++;
         if (c < '0' || c > '9') {
             return false;
         }
