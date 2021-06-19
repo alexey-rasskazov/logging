@@ -3,6 +3,7 @@
 #include <logging/sink/file.h>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include "fake_record_data.h"
 
 using namespace logging;
@@ -20,10 +21,10 @@ protected:
         SetUp(file_template);
     }
 
-    void SetUp(const std::string& file_template)
+    void SetUp(const std::string& file_template, int limit = 0)
     {
         this->file_template = file_template;
-        file_sink = std::make_unique<FileSink>(file_template);
+        file_sink = std::make_unique<FileSink>(file_template, limit);
     }
 
     void TearDown() override
@@ -143,5 +144,71 @@ TEST_F(FileTest, rotate_files_by_hour)
 
     for (size_t i = 0; i < filenames.size(); ++i) {
         EXPECT_EQ(read_file(filenames[i].c_str()), expectations[i]);
+    }
+}
+
+TEST_F(FileTest, rotate_files_max_5)
+{
+    std::string path = "test_logs/log_max_5/";
+    std::filesystem::remove_all(path);
+    SetUp(path + "rotation_test_hour_%Y-%m-%d_%H.log", 5);
+    FakeRecordData record;
+
+    for (int i = 0; i < 100; ++i) {
+        record.data = "line " + std::to_string(i + 1);
+        record.milliseconds += 5 * 60 * 1000;
+        file_sink->write(&record, nullptr);
+        if (filenames.empty() || filenames.back() != file_sink->get_filename()) {
+            add_file(file_sink->get_filename());
+        }
+    }
+
+    EXPECT_GE(filenames.size(), 6);
+    EXPECT_LE(filenames.size(), 10);
+
+    std::filesystem::path dir{filenames[0]};
+    dir.remove_filename();
+    size_t count = 0;
+    for (auto& p: std::filesystem::directory_iterator(dir)) {
+        if (p.is_regular_file()) {
+            ++count;
+        }
+    }
+    EXPECT_EQ(count, 5);
+}
+
+TEST_F(FileTest, template_wrong_syntax)
+{
+    try {
+        SetUp("test%_logs/%Y/rotation_test_hour_%Y-%m-%d_%H.log");
+        FAIL();
+    } catch (FileTemplateException &e) {
+        SUCCEED();
+    } catch(...) {
+        FAIL();
+    }
+}
+
+TEST_F(FileTest, template_empty)
+{
+    try {
+        SetUp("");
+        FAIL();
+    } catch (FileTemplateException &e) {
+        SUCCEED();
+    } catch(...) {
+        FAIL();
+    }
+}
+
+TEST_F(FileTest, template_end_slash)
+{
+    try {
+        SetUp("test_logs/%Y/rotation_test_hour_%Y-%m-%d_%H/");
+        FAIL();
+    } catch (FileTemplateException &e) {
+        SUCCEED();
+    } catch(...) {
+        FAIL();
     }
 }

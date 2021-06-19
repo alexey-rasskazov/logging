@@ -31,8 +31,6 @@ private:
 
     std::filesystem::path file_path;
     std::fstream file_stream;
-
-    bool open_file();
 };
 
 
