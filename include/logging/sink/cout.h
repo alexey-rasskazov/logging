@@ -12,6 +12,11 @@ class CoutSink : public BaseSink
 {
 public:
 
+    CoutSink() = default;
+    
+    template<class T>
+    CoutSink(T&& formatter) : BaseSink(std::forward<T>(formatter)) {}
+
     virtual void write(ILogRecordData *record, IFormatter *logger_formatter) override;
 
 private:

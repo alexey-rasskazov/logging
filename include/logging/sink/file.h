@@ -42,10 +42,6 @@ public:
     template <typename Fmt>
     FileSink(Fmt &&formatter, const std::string &file_template, unsigned int max_num_files = 0);
 
-    explicit FileSink() = delete;
-    explicit FileSink(const Formatter &formatter) = delete;
-    explicit FileSink(Formatter &&formatter) = delete;
-
     ~FileSink();
 
     std::string get_filename() const;
