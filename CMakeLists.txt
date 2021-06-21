@@ -53,5 +53,6 @@ target_include_directories(logging PUBLIC ${LOGGING_INCLUDE_DIR})
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 
     add_subdirectory(test)
+    add_subdirectory(examples)
 
 endif()
