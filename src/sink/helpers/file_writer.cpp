@@ -45,7 +45,8 @@ void LogFile::write(FileRecordData &data)
 
 std::string LogFile::get_filename() const
 {
-    return file_path.u8string();
+    auto u8path = file_path.u8string();
+    return {u8path.begin(), u8path.end()};
 }
 
 } // namespace logging
