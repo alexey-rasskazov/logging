@@ -4,8 +4,12 @@
 #include <numeric>
 #include <cstring>
 #include <logging/log_level.h>
+#include <logging/helper/datetime.h>
 
 namespace logging {
+
+
+constexpr size_t max_time_str_size = 40;
 
 struct TextData : public ITextData
 {
@@ -163,13 +167,13 @@ bool prepare_time_format(std::string& format)
  * @param datetime 
  * @param milliseconds 
  */
-void format_date_and_time(ITextData *target, const std::string& format, std::tm& datetime, int64_t milliseconds)
+void format_date_and_time(ITextData *target, const std::string& format, const std::tm& datetime, int64_t milliseconds)
 {
-    char time_str[40];
+    char time_str[max_time_str_size];
     
     std::strftime(time_str, sizeof(time_str), format.c_str(), &datetime);
     if (milliseconds) {
-        char time_str_ms[40];
+        char time_str_ms[max_time_str_size];
         snprintf(time_str_ms, sizeof(time_str_ms), time_str, milliseconds % 1000);
         target->append(time_str_ms);
     } else {
@@ -177,21 +181,18 @@ void format_date_and_time(ITextData *target, const std::string& format, std::tm&
     }
 }
 
+std::tm ms_to_tm(int64_t ms)
+{
+    std::tm datetime;
+    local_datetime(&datetime, static_cast<time_t>(ms/1000));
+    return datetime;
+}
+
 std::size_t calc_formatted_time_length(const std::string& format, bool is_millisecons)
 {
     TextData data;
-    int64_t ms = 1610462801012;
-    std::tm datetime;
-    std::memset(&datetime, 0, sizeof(datetime));
-    datetime.tm_sec = 41;
-    datetime.tm_min = 46;
-    datetime.tm_hour = 17;
-    datetime.tm_mday = 12;
-    datetime.tm_mon = 0;
-    datetime.tm_year = 121;
-    datetime.tm_wday = 2;
-    datetime.tm_yday = 11;
-    datetime.tm_isdst = 0;
+    const int64_t ms = 1610462801012;
+    static std::tm datetime = ms_to_tm(ms);
     
     format_date_and_time(&data, format, datetime, is_millisecons ? ms : 0);
     return data.data.length();
@@ -245,16 +246,23 @@ struct FormatUnit
     }
 };
 
-void format_record_date_and_time(ITextData* target, const FormatUnit& unit, ILogRecordData* record)
+void format_record_date_and_time(ITextData* target, const FormatUnit& unit, ILogRecordData* record, ITimeFormatter *time_fmt)
 {
-    std::tm datetime = record->get_tm();
-
-    format_date_and_time(
-        target,
-        unit.text,
-        datetime, 
-        unit.is_msec ? record->get_time() : 0
-    );
+    char time_str[max_time_str_size];
+    if (time_fmt) {
+        time_fmt->format_time(time_str, sizeof(time_str), unit.text.c_str());
+    } else {
+        std::tm datetime;
+        local_datetime(&datetime, static_cast<time_t>(record->get_time()/1000));
+        std::strftime(time_str, sizeof(time_str), unit.text.c_str(), &datetime);
+    }
+    if (unit.is_msec) {
+        char time_str_ms[max_time_str_size];
+        snprintf(time_str_ms, sizeof(time_str_ms), time_str, record->get_time() % 1000);
+        target->append(time_str_ms);
+    } else {
+        target->append(time_str);
+    }
 }
 
 /**
@@ -417,7 +425,7 @@ std::string Formatter::format_record(ILogRecordData* record)
     return result.data;
 }
 
-void Formatter::format_record(ITextData *result, ILogRecordData *record)
+void Formatter::format_record(ITextData *result, ILogRecordData *record, ITimeFormatter *time_fmt)
 {
     if (!pimpl) {
         result->append(record->get_data());
@@ -435,7 +443,7 @@ void Formatter::format_record(ITextData *result, ILogRecordData *record)
             break;
 
         case FormatUnitType::TIME:
-            format_record_date_and_time(result, unit, record);
+            format_record_date_and_time(result, unit, record, time_fmt);
             break;
                 
         case FormatUnitType::LEVEL:

@@ -2,7 +2,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <ctime>
 
 namespace logging {
 
@@ -18,7 +17,6 @@ struct ILogRecordData
     virtual int64_t get_data_length(bool add_filename) const = 0;
     virtual LogLevel get_level() const = 0;
     virtual int64_t get_time() const = 0;
-    virtual std::tm get_tm() const = 0;
     virtual const char* get_file_name() const = 0;
     virtual int get_line_number() const = 0;
 };
@@ -34,12 +32,21 @@ struct ITextData
 };
 
 /**
+ * @brief Date and time formatter interface
+ * 
+ */
+struct ITimeFormatter
+{
+    virtual void format_time(char *res, size_t maxsize, const char *fmt) = 0;
+};
+
+/**
  * @brief Record data fromatter interface
  * 
  */
 struct IFormatter
 {
-    virtual void format_record(ITextData *result, ILogRecordData *record) = 0;
+    virtual void format_record(ITextData *result, ILogRecordData *record, ITimeFormatter *time_fmt = nullptr) = 0;
 };
 
 /**

@@ -30,7 +30,7 @@ struct FakeFormatter : public IFormatter
 
     FakeFormatter(const std::string& prefix = "PREFIX ") : prefix(prefix) { }
 
-    virtual void format_record(ITextData *result, ILogRecordData *record) override
+    virtual void format_record(ITextData *result, ILogRecordData *record, ITimeFormatter *time_fmt = nullptr) override
     {
         result->append(prefix.c_str());
         result->append(record->get_data());

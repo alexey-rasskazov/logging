@@ -4,6 +4,7 @@
 #include <limits>
 #include <iostream>
 #include <string.h>
+#include <logging/helper/datetime.h>
 #include "helpers/filename_template.h"
 #include "helpers/file_writer.h"
 
@@ -28,6 +29,19 @@ public:
     void write_record(ILogRecordData *record, IFormatter *formatter);
     void remove_old_files(const std::filesystem::path &dir);
 
+    struct TimeFormatter : public ITimeFormatter
+    {
+        std::tm datetime;
+        TimeFormatter(ILogRecordData *record)
+        {
+            local_datetime(&datetime, static_cast<time_t>(record->get_time()/1000));
+        }
+
+        virtual void format_time(char *res, size_t maxsize, const char *fmt) override
+        {
+            std::strftime(res, maxsize, fmt, &datetime);
+        }
+    };
 };
 
 FileSink::Impl::Impl(const std::string& file_template, unsigned int max_files)
@@ -40,15 +54,16 @@ FileSink::Impl::Impl(const std::string& file_template, unsigned int max_files)
 void FileSink::Impl::write_record(ILogRecordData *record, IFormatter *formatter)
 {
     FileRecordData data;
+    TimeFormatter tf{record};
+    
     if (formatter) {
-        formatter->format_record(&data, record);
+        formatter->format_record(&data, record, &tf);
     } else {
         data.data = record->get_data();
     }
 
-    std::tm record_tm = record->get_tm();
-    if (!file || filename_template.is_need_rotate(record_tm, last_record_tm)) {
-        auto filename = filename_template.generate_filename(record_tm);
+    if (!file || filename_template.is_need_rotate(tf.datetime, last_record_tm)) {
+        auto filename = filename_template.generate_filename(tf.datetime);
         std::filesystem::path dir{filename};
         dir.remove_filename();
         std::filesystem::create_directories(dir);
@@ -58,7 +73,7 @@ void FileSink::Impl::write_record(ILogRecordData *record, IFormatter *formatter)
 
     file->write(data);
     
-    last_record_tm = record_tm;
+    last_record_tm = tf.datetime;
 }
 
 void FileSink::Impl::remove_old_files(const std::filesystem::path &dir)

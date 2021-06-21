@@ -30,7 +30,6 @@ struct FakeRecordData : public logging::ILogRecordData
     virtual int64_t get_data_length(bool add_filename) const override;
     virtual logging::LogLevel get_level() const override;
     virtual int64_t get_time() const override;
-    virtual std::tm get_tm() const override;
     virtual const char* get_file_name() const override;
     virtual int get_line_number() const override;
 };

@@ -21,13 +21,6 @@ int64_t FakeRecordData::get_time() const
     return milliseconds;
 }
 
-std::tm FakeRecordData::get_tm() const
-{
-    std::tm dt;
-    logging::local_datetime(&dt, static_cast<time_t>(milliseconds / 1000));
-    return dt;
-}
-
 const char* FakeRecordData::get_file_name() const
 {
     return file_name.c_str();

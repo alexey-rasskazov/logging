@@ -1,7 +1,6 @@
 #include <logging/helper/log_record_data.h>
 #include <chrono>
 #include <logging/log_level.h>
-#include <logging/helper/datetime.h>
 
 namespace logging {
 
@@ -23,7 +22,6 @@ LogRecordData::LogRecordData(LogLevel log_level, const char* file_name, int line
     } else {
         milliseconds = 0;
     }
-    datetime.tm_year = 0;
 }
 
 LogRecordData::LogRecordData(LogRecordData &&rhs) noexcept
@@ -38,7 +36,6 @@ LogRecordData& LogRecordData::operator = (LogRecordData &&rhs) noexcept
     file_name = std::move(rhs.file_name);
     line_number = rhs.line_number;
     milliseconds = rhs.milliseconds;
-    datetime = rhs.datetime;
     rhs.milliseconds = 0;
     return *this;
 }
@@ -61,14 +58,6 @@ LogLevel LogRecordData::get_level() const
 int64_t LogRecordData::get_time() const
 {
     return milliseconds;
-}
-
-std::tm LogRecordData::get_tm() const
-{
-    if (datetime.tm_year == 0) {
-         local_datetime(&datetime, static_cast<time_t>(milliseconds/1000));
-    }
-    return datetime;
 }
 
 const char* LogRecordData::get_file_name() const

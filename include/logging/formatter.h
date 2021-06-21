@@ -43,7 +43,7 @@ public:
 
     std::string format_record(ILogRecordData *data);
 
-    virtual void format_record(ITextData *result, ILogRecordData *record) override;
+    virtual void format_record(ITextData *result, ILogRecordData *record, ITimeFormatter *time_fmt = nullptr) override;
 
 private:
 
