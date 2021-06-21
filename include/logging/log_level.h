@@ -23,3 +23,5 @@ const char* log_level_name(LogLevel level);
 LogLevel log_level_by_name(const char* name);
 
 } // logging
+
+using logging::LogLevel;
