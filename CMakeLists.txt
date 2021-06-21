@@ -46,6 +46,8 @@ set_target_properties(
     CXX_STANDARD_REQUIRED ON
 )
 
+target_compile_definitions(logging PUBLIC _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
+
 target_include_directories(logging PUBLIC ${LOGGING_INCLUDE_DIR})
 
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
