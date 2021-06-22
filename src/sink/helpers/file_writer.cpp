@@ -1,5 +1,6 @@
 #include "file_writer.h"
 #include <iostream>
+#include "convert_str.h"
 
 using namespace std;
 
@@ -45,8 +46,7 @@ void LogFile::write(FileRecordData &data)
 
 std::string LogFile::get_filename() const
 {
-    auto u8path = file_path.u8string();
-    return {u8path.begin(), u8path.end()};
+    return convert_str<std::string>(file_path.u8string());
 }
 
 } // namespace logging

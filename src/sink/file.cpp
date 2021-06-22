@@ -7,6 +7,7 @@
 #include <logging/helper/datetime.h>
 #include "helpers/filename_template.h"
 #include "helpers/file_writer.h"
+#include "helpers/convert_str.h"
 
 namespace logging {
 
@@ -89,9 +90,7 @@ void FileSink::Impl::remove_old_files(const std::filesystem::path &dir)
     
     for (auto& p: std::filesystem::directory_iterator(dir)) {
         if (p.is_regular_file()) {
-            auto u8name = p.path().filename().u8string();
-            std::string name{u8name.begin(), u8name.end()};
-
+            auto name = convert_str<std::string>(p.path().filename().u8string());
             auto params = filename_template.parse_filename(name);
             if (params.has_value()) {
                 if (params.value() < oldest_file_params) {
