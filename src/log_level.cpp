@@ -12,6 +12,7 @@ const char* log_level_name(LogLevel level)
     case LogLevel::ERROR:       return "ERROR";
     case LogLevel::FATAL:       return "FATAL";
     case LogLevel::DISABLED:    return "DISABLED";
+    case LogLevel::UNKNOWN:     return "";
     }
     return "";
 }

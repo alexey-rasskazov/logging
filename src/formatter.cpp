@@ -241,6 +241,7 @@ struct FormatUnit
             case FormatUnitType::FILE:          return 0;
             case FormatUnitType::LINE:          return 4;
             case FormatUnitType::TEXT:          return text.length();
+            case FormatUnitType::MESSAGE:       return 0;
         }
         return 0;
     }

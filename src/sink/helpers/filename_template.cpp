@@ -27,6 +27,7 @@ const char* get_token_type_format(TemplateTokenType type)
         case TemplateTokenType::YDAY:   return "%j";
         case TemplateTokenType::WEEK:   return "%W";
         case TemplateTokenType::HOUR:   return "%H";
+        case TemplateTokenType::TEXT:   return "";
     }
     return "";
 }
@@ -156,6 +157,7 @@ bool FilenameTemplate::is_need_rotate(const std::tm& tm, const std::tm& current_
                     if (!is_equal_weeks(current_tm, tm))
                         return true;
                 break;
+                default: break;
             }
         }
     }
